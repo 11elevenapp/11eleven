@@ -1,0 +1,17 @@
+{
+  "name": "11eleven",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server/server.js",
+    "start": "node server/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "node-fetch": "^3.3.2",
+    "openai": "^6.9.0",
+    "stripe": "^16.6.0"
+  }
+}

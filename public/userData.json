@@ -1,0 +1,27 @@
+{
+  "preferences": {},
+  "avoid": {},
+  "last10Themes": [
+    "worthiness",
+    "boundaries"
+  ],
+  "insights": {
+    "dominantTheme": "worthiness",
+    "trend": "balancing",
+    "emotionalTone": "rebuilding",
+    "patternScore": 0
+  },
+  "language": "en",
+  "geo": {
+    "timeZone": "America/Chicago",
+    "region": "americas",
+    "source": "timezone"
+  },
+  "preferencesModel": {
+    "byTheme": {},
+    "byEmotion": {},
+    "byTone": {},
+    "languages": [],
+    "lastLanguage": "en"
+  }
+}

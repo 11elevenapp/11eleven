@@ -1,0 +1,574 @@
+/* 11Eleven — refined mystic style */
+:root{
+  --violet:#8B5CF6; --cyan:#06B6D4; --magenta:#F472B6;
+  --midnight:#0F172A; --gold:#FACC15; --white:#F1F5F9;
+}
+*{box-sizing:border-box}
+html,body{
+  height:100%;
+  margin:0;
+  font-family:'Cinzel Decorative', Inter, system-ui, sans-serif;
+  background:#0F172A;
+  color:var(--white);
+}
+
+.bg{
+  min-height:100%;
+  background:
+    radial-gradient(1200px 800px at 20% 10%, rgba(139,92,246,.25), transparent 60%),
+    radial-gradient(1000px 700px at 80% 20%, rgba(6,182,212,.18), transparent 60%),
+    radial-gradient(900px 900px at 50% 90%, rgba(244,114,182,.15), transparent 60%),
+    #0F172A;
+  position:relative;
+  overflow:hidden;
+}
+.topbar{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:28px 16px;
+  opacity:.9;
+  text-align:center;
+}
+
+.siteLogo{
+  width:70px;
+  height:auto;
+  margin-bottom:6px;
+  opacity:0.95;
+  filter:drop-shadow(0 0 6px rgba(255,255,255,0.25));
+  transition:transform .3s ease, opacity .3s ease;
+}
+.siteLogo:hover{
+  transform:scale(1.05);
+  opacity:1;
+}
+
+.logo{font-weight:800;letter-spacing:.5px;font-size:32px;margin-bottom:4px}
+.tag{opacity:.8;font-size:16px}
+
+.hero{display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px 16px;margin-top:8vh;text-align:center}
+.headline{font-weight:800;line-height:1.1;margin:0;font-size:clamp(28px,4vw,44px)}
+.subcopy{opacity:.8;margin:0}
+.countdown{font-size:clamp(32px,7vw,72px);font-weight:800;letter-spacing:2px;margin:8px 0 16px}
+
+.cta{
+  background:linear-gradient(90deg,var(--violet),var(--cyan));
+  border:none;color:white;padding:16px 28px;border-radius:14px;
+  font-weight:800;cursor:pointer;box-shadow:0 0 25px rgba(139,92,246,.35);
+  transition:transform .2s ease, box-shadow .2s ease, filter .2s ease; font-size:16px;
+}
+.cta:disabled{filter:grayscale(.9);opacity:.6;cursor:not-allowed;box-shadow:none}
+.cta.glow{animation:glow 2s ease-in-out infinite}
+.cta.small{padding:10px 16px;border-radius:12px;font-weight:700}
+.linklike{background:none;border:none;color:var(--gold);font-weight:700;cursor:pointer;text-decoration:underline}
+.note{opacity:.7;font-size:14px;margin-top:8px}
+.altline{opacity:.9;margin-top:4px}
+
+.footer{position:fixed;bottom:12px;width:100%;text-align:center;opacity:.9}
+.footer a{color:var(--white);text-decoration:none;font-weight:600}
+.footer a:hover{text-decoration:underline}
+
+.modal{position:fixed;inset:0;background:rgba(5,8,20,.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center}
+.hidden{display:none}
+.panel{background:rgba(15,23,42,.85);border:1px solid rgba(255,255,255,.06);padding:24px;border-radius:18px;max-width:680px;width:94%;box-shadow:0 10px 50px rgba(0,0,0,.45);position:relative;overflow:hidden}
+
+/* Center prophecy inside the aura */
+.aura {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--white);
+  font-size: 27px;
+  line-height: 1.5;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.aura::before {
+  content: "";
+  position: absolute;
+  inset: -35px;             /* smaller swirl radius */
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #8B5CF6, #06B6D4, #F472B6, #8B5CF6);
+  filter: blur(20px) contrast(1.05);
+  animation: spin 24s linear infinite;
+  opacity: 0.50;
+}
+
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.ghost{background:transparent;border:1px solid rgba(255,255,255,.25);color:var(--white);padding:10px 16px;border-radius:12px;font-weight:700;cursor:pointer}
+.actions{display:flex;gap:8px;justify-content:center;margin-top:8px}
+
+@keyframes glow{0%{box-shadow:0 0 10px rgba(139,92,246,.3)}50%{box-shadow:0 0 30px rgba(6,182,212,.55)}100%{box-shadow:0 0 10px rgba(139,92,246,.3)}}
+
+#prophecyText {
+  font-family: 'EB Garamond', serif;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  font-size: 1.4rem;
+  line-height: 2;
+  color: #fff;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+#prophecyText.show {
+  opacity: 1;
+}
+
+
+.prophecy {
+  position: relative;
+  z-index: 2;
+  font-weight: 500;
+  animation: fadeIn 2s ease-out forwards, float 6s ease-in-out infinite;
+  opacity: 0;
+}
+
+/* Glowing aura text animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Optional soft glow */
+.aura::after {
+  content: "";
+  position: absolute;
+  inset: -15;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.15), transparent 70%);
+  z-index: 1;
+  filter: blur(20px) contrast(1.05);
+  animation: spin 5s linear alternate-reverse;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.05); }
+}
+
+/* ============================================================
+   SHAREABLE PROPHECY CARDS — 11ELEVEN (Premium Edition)
+   Three Templates:
+   - GOLD FOIL (11:11 oracle)
+   - HYBRID (Early Access)
+   - AURA (Deeper Reading)
+   ============================================================ */
+
+.share-card {
+  width: 1080px;
+  height: 1080px;
+  border-radius: 46px;
+  padding: 70px;
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===========================================
+   LOGO
+   =========================================== */
+#shareLogo {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;  /* Large, iconic */
+  height: auto;
+  z-index: 5;
+  filter: drop-shadow(0px 0px 14px rgba(255,255,255,0.28));
+}
+
+/* ===========================================
+   PROPHECY TEXT
+   =========================================== */
+#shareProphecyText {
+  position: relative;
+  z-index: 5;
+  margin-top: 180px;   /* Leaves space for the logo */
+  padding: 0 60px;
+  font-family: 'EB Garamond', serif;
+  font-size: 42px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: #ffffff;
+  white-space: pre-line;
+  text-align: center;
+}
+
+/* ===========================================
+   BRANDING (Bottom Center)
+   =========================================== */
+#shareBranding {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  color: rgba(255,255,255,0.70);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-family: Inter, system-ui, sans-serif;
+  z-index: 5;
+}
+
+
+/* ===========================================
+   BASE LAYERS FOR CARD STYLES
+   =========================================== */
+.share-card.goldfoil-card,
+.share-card.hybrid-card,
+.share-card.aura-card {
+  position: relative;
+}
+
+/* ===========================================
+   TEMPLATE 1 — 11:11 GOLD FOIL SIGNATURE CARD
+   (Soft, elegant gold)
+   =========================================== */
+
+.share-card.goldfoil-card {
+  background: #D3AF37;
+  box-shadow: 0 0 80px rgba(255, 215, 140, 0.251),
+              inset 0 0 150px rgba(255,215,140,0.12);
+}
+
+/* Gold shimmer texture */
+.share-card.goldfoil-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("https://www.transparenttextures.com/patterns/brushed-alum.png"),
+              linear-gradient(140deg, rgba(255, 230, 149, 0.25), rgba(255, 246, 210, 0.1));
+  mix-blend-mode: soft-light;
+  opacity: 0.55;
+  filter: blur(2px);
+  animation: goldGloss 14s ease-in-out infinite alternate;
+  z-index: 1;
+}
+
+/* soft gold shimmer */
+@keyframes goldGloss {
+  0% { opacity: 0.40; transform: translateX(-10%) rotate(0deg); }
+  50% { opacity: 0.55; transform: translateX(5%) rotate(1deg); }
+  100% { opacity: 0.40; transform: translateX(-10%) rotate(0deg); }
+}
+
+/* Gold-foil logo effect */
+.goldfoil-card #shareLogo {
+  filter: brightness(1.3) sepia(1) saturate(4) hue-rotate(10deg)
+          drop-shadow(0 0 14px rgba(134, 98, 32, 0.45));
+}
+
+/* Gold prophecy text glow */
+.goldfoil-card #shareProphecyText {
+  color: #fffdf7;
+  text-shadow: 0 0 14px rgba(255,215,140,0.28);
+}
+
+/* ===========================================
+   TEMPLATE 2 — EARLY ACCESS (Hybrid)
+   Black border + gradient inner
+   =========================================== */
+
+.share-card.hybrid-card {
+  background: #05050A;
+  padding: 65px;
+  box-shadow: 0 0 55px rgba(0,0,0,0.65),
+              inset 0 0 60px rgba(255,255,255,0.04);
+}
+
+.share-card.hybrid-card::before {
+  content: "";
+  position: absolute;
+  inset: 40px;
+  border-radius: 32px;
+  background: radial-gradient(circle at 50% 40%, 
+      rgba(255,255,255,0.09),
+      rgba(0,0,0,0.15) 70%),
+      linear-gradient(160deg, rgba(139,92,246,0.32), rgba(6,182,212,0.20));
+  filter: blur(12px);
+  z-index: 1;
+}
+
+/* ===========================================
+   TEMPLATE 3 — DEEPER ACCESS (Aura)
+   Full gradient + swirl
+   =========================================== */
+
+.share-card.aura-card {
+  background: #0c0f1a;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0,0,0,0.5);
+}
+
+.share-card.aura-card::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: conic-gradient(
+      from 0deg,
+      #8B5CF6,
+      #06B6D4,
+      #F472B6,
+      #8B5CF6);
+  animation: auraSpin 26s linear infinite;
+  filter: blur(160px);
+  opacity: 0.35;
+  z-index: 1;
+}
+
+@keyframes auraSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===========================================
+   High-level stacking (content above art)
+   =========================================== */
+.share-card * {
+  z-index: 5;
+  position: relative;
+}
+
+/* Share Modal System */
+.share-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 7, 15, 0.78);
+  backdrop-filter: blur(18px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.share-modal-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.share-modal-container {
+  width: min(92vw, 520px);
+  background: rgba(16, 18, 30, 0.92);
+  border-radius: 24px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  animation: shareModalFade 0.25s ease;
+  font-family: "Inter", system-ui, sans-serif;
+}
+@keyframes shareModalFade {
+  from { transform: translateY(10px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+.share-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 26px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.share-modal-close:hover {
+  color: #fff;
+}
+.share-modal-card-preview {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+.share-modal-card-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.share-modal-caption {
+  width: 100%;
+  min-height: 140px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  background: rgba(12, 14, 24, 0.9);
+  color: #f4f4ff;
+  resize: none;
+  padding: 16px;
+  font-size: 15px;
+  line-height: 1.5;
+  caret-color: transparent;
+}
+.share-modal-caption.copied {
+  border-color: #8ef5ff;
+  box-shadow: 0 0 14px rgba(142, 245, 255, 0.25);
+}
+.share-modal-feedback {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.share-modal-feedback-btn {
+  flex: 1 1 30%;
+  min-width: 120px;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  color: #0c0f1a;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.share-modal-feedback-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.share-modal-feedback-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(249, 115, 22, 0.25);
+}
+.share-modal-actions {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0 18px 0;
+}
+.share-modal-copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  color: #0c0f1a;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.share-modal-copy:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(249, 115, 22, 0.35);
+}
+.share-modal-main-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+.share-modal-btn {
+  width: 100%;
+  min-width: 0;
+  border-radius: 999px;
+  padding: 14px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.share-modal-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+.share-modal-share {
+  border: none;
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  color: #081225;
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.35);
+}
+.share-modal-share:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.share-modal-save {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f5f7ff;
+}
+.share-modal-save:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+.share-modal-close-btn {
+  width: 100%;
+  border: none;
+  border-radius: 16px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8f8ff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.share-modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Theme Variants */
+.share-modal-container[data-theme="portal_1111"] .share-modal-card-preview {
+  border: 1px solid rgba(255, 215, 180, 0.6);
+  box-shadow: 0 0 30px rgba(255, 215, 180, 0.25);
+}
+.share-modal-container[data-theme="portal_1111"] .share-modal-save {
+  border-color: rgba(255, 215, 180, 0.35);
+}
+.share-modal-container[data-theme="portal_1111"] .share-modal-share {
+  box-shadow: 0 12px 32px rgba(255, 215, 180, 0.35);
+}
+.share-modal-container[data-theme="portal_1111"] .share-modal-copy {
+  background: linear-gradient(135deg, #fff8e1, #f8d084);
+}
+
+.share-modal-container[data-theme="early"] .share-modal-card-preview {
+  border: 1px solid rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.25);
+}
+.share-modal-container[data-theme="early"] .share-modal-save {
+  border-color: rgba(99, 102, 241, 0.45);
+}
+.share-modal-container[data-theme="early"] .share-modal-share {
+  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.35);
+}
+.share-modal-container[data-theme="early"] .share-modal-copy {
+  background: linear-gradient(135deg, #8b5cf6, #312e81);
+  color: #f5f3ff;
+}
+
+.share-modal-container[data-theme="deeper"] .share-modal-card-preview {
+  border: 1px solid rgba(14, 165, 233, 0.6);
+  box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
+}
+.share-modal-container[data-theme="deeper"] .share-modal-save {
+  border-color: rgba(45, 212, 191, 0.45);
+}
+.share-modal-container[data-theme="deeper"] .share-modal-share {
+  box-shadow: 0 12px 32px rgba(45, 212, 191, 0.35);
+}
+.share-modal-container[data-theme="deeper"] .share-modal-copy {
+  background: linear-gradient(135deg, #14b8a6, #2563eb);
+  color: #edfafa;
+}

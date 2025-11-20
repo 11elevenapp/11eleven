@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>11Eleven — Your Aura, at 11:11</title>
+  <link rel="icon" type="image/png" href="./assets/1111-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<!-- Share Modal Root -->
+<div id="share-modal-root"></div>
+
+<body>
+  <main class="bg">
+    <header class="topbar">
+      <img src="./assets/1111-logo.png" alt="11eleven logo" class="siteLogo" />
+      <div class="logo">11Eleven</div>
+      <div class="tag">Your aura, at 11:11</div>
+    </header>
+
+    <section class="hero">
+      <h1 class="headline">The portal is <span id="portalState">closed</span>.</h1>
+      <p id="subcopy" class="subcopy">Next reading unlocks in</p>
+      <div class="countdown" id="countdown">--:--:--</div>
+
+      <button id="revealBtn" class="cta" disabled>Wait for the portal</button>
+
+      <div class="altline">
+        Can’t wait?
+        <button id="earlyBtn" class="linklike">Unlock Early Access ($1)</button>
+      </div>
+
+      <div class="note">Your AURA at 11:11 is free. After that, deeper insights are $1.</div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- MODAL -->
+    <!-- ========================================================= -->
+    <section id="modal" class="modal hidden">
+      <div class="panel">
+        <div class="aura" id="aura">
+          <p class="prophecy" id="prophecyText">Tuning to your energy…</p>
+        </div>
+
+        <div class="actions">
+          <button id="deepBtn" class="cta small">See a deeper insight ($1)</button>
+          <button id="shareBtn" class="ghost small">Share</button>
+          <button id="closeBtn" class="ghost small">Close</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <a href="./privacy.html">Privacy</a> · <a href="./terms.html">Terms</a> · © 11Eleven
+    </footer>
+  </main>
+
+  <!-- ========================================================= -->
+  <!-- HIDDEN SHARE CARD (Square 1080 × 1080) — FINAL PREMIUM VERSION -->
+  <!-- ========================================================= -->
+  <div id="shareCard" class="share-card hidden">
+
+    <!-- Gold / Hybrid / Aura Backgrounds are controlled by CSS classes -->
+    
+    <!-- Center Logo -->
+    <img id="shareLogo" src="./assets/1111-logo.png" alt="logo" />
+
+    <!-- Prophecy Text -->
+    <p id="shareProphecyText"></p>
+
+    <!-- Branding Bottom-Center -->
+    <div id="shareBranding">@11ElevenApp · 11Eleven.app</div>
+
+    <!-- QR Code Bottom-Right -->
+    <div id="shareQR"></div>
+
+  </div>
+
+  <!-- 🔮 Prophecy Modal -->
+  <div id="prophecyModal" class="modal hidden">
+    <div class="modal-content">
+      <div id="prophecyText" class="prophecy-text">...</div>
+
+      <div class="modal-buttons">
+        <button id="shareBtn" class="primary-btn">Share</button>
+        <button id="closeProphecy" class="secondary-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📤 Share Modal -->
+  <div id="shareModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Your shareable insight is ready</h3>
+      <img id="shareImagePreview" class="share-preview" />
+
+      <button id="downloadShareImage" class="primary-btn">Download</button>
+      <button id="closeShareModal" class="secondary-btn">Close</button>
+    </div>
+  </div>
+
+  <!-- 🖼️ Hidden Share Card Builder -->
+  <div id="shareCard" class="share-card" style="display:none">
+    <img id="shareLogo" src="./assets/1111-logo.png" />
+    <p id="shareProphecyText"></p>
+    <div id="shareBranding"></div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- SCRIPTS (MUST BE IN THIS EXACT ORDER) -->
+  <!-- ========================================================= -->
+
+  <!-- 1) html2canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <!-- 2) QRCode Generator -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- 3) Translation Helper -->
+  <script src="js/translate.js"></script>
+
+  <!-- 4) Engine -->
+  <script type="module" src="engine.js"></script>
+
+  <!-- 5) Hashtag Generator -->
+  <script src="js/hashtagGenerator.js"></script>
+
+  <!-- 6) Share Card Engine -->
+  <script src="./js/shareCard.js"></script>
+
+  <!-- 7) Share Modal -->
+  <script defer src="js/shareModal.js"></script>
+
+  <!-- 8) UI + Share Logic -->
+  <script src="./script.js"></script>
+
+
+</body>
+</html>
