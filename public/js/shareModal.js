@@ -272,13 +272,32 @@
   }
 
   async function shareFallback(cardUrl, overlay, filename) {
-    // Open preview in new tab so user can long-press/save inside IG
-    window.open(cardUrl, "_blank");
-
-    // Copy caption automatically
+    // 1) Copy caption
     const textarea = overlay.querySelector(".share-modal-caption");
-    await copyCaptionFromTextarea(textarea);
-    alert("Image opened in a new tab + caption copied.");
+    if (textarea) {
+      await copyCaptionFromTextarea(textarea);
+    }
+
+    // 2) Try to open the image itself
+    try {
+      // In many in-app browsers, window.open is blocked, so fall back to same-tab
+      if (window.open) {
+        const win = window.open(cardUrl, "_blank");
+        if (!win) {
+          window.location.href = cardUrl;
+        }
+      } else {
+        window.location.href = cardUrl;
+      }
+    } catch (e) {
+      // As a last resort, just try same-tab navigation
+      window.location.href = cardUrl;
+    }
+
+    // 3) Let the user know what happened
+    alert(
+      "Caption copied. If the image doesn’t appear or download in this app, take a screenshot of the card."
+    );
   }
 
   function handleSave(overlay, button) {
@@ -295,6 +314,10 @@
       button.textContent = "Saving…";
     }
     downloadDataUrl(cardUrl, filename);
+    // Helpful hint for environments that block downloads (e.g. Instagram webview)
+    alert(
+      "If this app doesn’t let the image download automatically, take a screenshot of the card. The caption button still works."
+    );
     if (button) {
       setTimeout(() => {
         button.disabled = false;

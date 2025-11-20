@@ -413,17 +413,18 @@ html,body{
   display: block;
 }
 .share-modal-caption {
-  width: 100%;
-  min-height: 140px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  background: rgba(12, 14, 24, 0.9);
-  color: #f4f4ff;
+  /* Visually hide, but keep in DOM for JS + clipboard */
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
   resize: none;
-  padding: 16px;
-  font-size: 15px;
-  line-height: 1.5;
-  caret-color: transparent;
 }
 .share-modal-caption.copied {
   border-color: #8ef5ff;
