@@ -352,8 +352,10 @@ html,body{
   background: rgba(5, 7, 15, 0.78);
   backdrop-filter: blur(18px);
   display: flex;
-  align-items: center;
+  align-items: flex-start !important;
   justify-content: center;
+  overflow-y: auto !important;
+  padding: 40px 0 !important;
   z-index: 9999;
   opacity: 0;
   pointer-events: none;
@@ -369,6 +371,8 @@ html,body{
   border-radius: 24px;
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
   padding: 28px;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
   display: flex;
   flex-direction: column;
   gap: 20px;

@@ -165,12 +165,18 @@
   }
 
   function downloadDataUrl(dataUrl, filename) {
-    const link = document.createElement("a");
-    link.href = dataUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Attempt standard download first
+    const a = document.createElement("a");
+    a.href = dataUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    // Fallback for Instagram / Facebook / TikTok webview
+    if (!a.download) {
+      window.open(dataUrl, "_blank");
+    }
   }
 
   async function handleFeedbackReaction(overlay, button) {
@@ -266,10 +272,13 @@
   }
 
   async function shareFallback(cardUrl, overlay, filename) {
-    downloadDataUrl(cardUrl, filename);
+    // Open preview in new tab so user can long-press/save inside IG
+    window.open(cardUrl, "_blank");
+
+    // Copy caption automatically
     const textarea = overlay.querySelector(".share-modal-caption");
     await copyCaptionFromTextarea(textarea);
-    alert("Image downloaded. Caption copied.");
+    alert("Image opened in a new tab + caption copied.");
   }
 
   function handleSave(overlay, button) {
