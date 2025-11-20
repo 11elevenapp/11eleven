@@ -587,6 +587,9 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "public", "index.html"));
 });
 
+// Export AFTER routes
+module.exports = app;
+
 // Catch-all route for unmatched paths
 app.get("*", (req, res) => {
   res.status(404).send("Not Found");
