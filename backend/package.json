@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "node server/server.js",
     "copy-public": "cp -r ../public ./public || true",
-    "start": "npm run copy-public && node server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
