@@ -590,7 +590,7 @@ app.get("*", (req, res) => {
 // ---------------------------------------------------------------------
 // START SERVER
 // ---------------------------------------------------------------------
-const PORT = 8787;
+const PORT = process.env.PORT || 8787;
 app.listen(PORT, () => {
   console.log(`🔮 11Eleven Oracle running at http://localhost:${PORT}`);
 });
