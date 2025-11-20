@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "node server/server.js",
+    "dev": "node backend/server.js",
     "copy-public": "cp -r ../public ./public || true",
-    "start": "node server.js"
+    "start": "node backend/server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
