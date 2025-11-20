@@ -18,7 +18,7 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(__dirname, "./public")));
 app.use(express.json({ limit: "25mb" }));
 
 const USER_DATA_PATH = path.join(__dirname, "..", "public", "userData.json");
@@ -579,7 +579,7 @@ app.post("/api/user-geo", async (req, res) => {
 
 // Serve index.html on the root route
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
+  res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
 // Catch-all route for unmatched paths
