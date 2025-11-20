@@ -578,14 +578,14 @@ app.post("/api/user-geo", async (req, res) => {
   }
 });
 
-// ROOT ROUTE
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
-});
-
 // Ping (health check)
 app.get("/ping", (req, res) => {
   res.send("pong");
+});
+
+// ROOT ROUTE
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 // Catch-all route for unmatched paths
