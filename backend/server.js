@@ -14,6 +14,17 @@ dotenv.config();
 
 const app = express();
 
+// --- CORS FIX FOR FRONTEND (Netlify → Render) ---
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // Enable static file serving from the /public folder
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,7 +86,7 @@ function withDefaultUserData(raw) {
       patternScore:
         typeof raw.insights?.patternScore === "number"
           ? raw.insights.patternScore
-      : USER_DATA_DEFAULT.insights.patternScore,
+          : USER_DATA_DEFAULT.insights.patternScore,
     },
     language: raw.language || USER_DATA_DEFAULT.language,
     geo: {
@@ -115,11 +126,7 @@ async function readUserData() {
 
 async function writeUserData(data) {
   const merged = withDefaultUserData(data);
-  await fs.writeFile(
-    USER_DATA_PATH,
-    JSON.stringify(merged, null, 2),
-    "utf8"
-  );
+  await fs.writeFile(USER_DATA_PATH, JSON.stringify(merged, null, 2), "utf8");
 }
 
 function themeToneMapping(themeKey) {
