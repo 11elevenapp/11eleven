@@ -578,6 +578,10 @@ app.post("/api/user-geo", async (req, res) => {
   }
 });
 
+app.get("/ping", (req, res) => {
+  res.send("pong");
+});
+
 // ROOT ROUTE
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "public", "index.html"));

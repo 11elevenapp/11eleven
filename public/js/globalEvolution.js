@@ -1,3 +1,5 @@
+const API_BASE = "https://one11eleven-backend.onrender.com";
+
 const DEFAULT_GLOBAL = {
   themes: {},
   emotions: {},

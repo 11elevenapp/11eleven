@@ -1,4 +1,6 @@
 (function () {
+  const API_BASE = "https://one11eleven-backend.onrender.com";
+
   // 🔥 Ensure modal overlay exists in the DOM
   (function initShareModal() {
     if (!document.getElementById("share-modal-overlay")) {
@@ -188,7 +190,7 @@
     button.textContent = "Sending…";
 
     try {
-      const res = await fetch("/api/user-feedback", {
+      const res = await fetch(`${API_BASE}/api/user-feedback`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

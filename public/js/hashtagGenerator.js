@@ -1,4 +1,6 @@
 (function () {
+  const API_BASE = "https://one11eleven-backend.onrender.com";
+
   const MIN_TOTAL = 8;
   const MAX_TOTAL = 14;
 

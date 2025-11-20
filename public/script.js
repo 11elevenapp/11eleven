@@ -1,3 +1,5 @@
+import { pingServer } from "./js/ping.js";
+
 // =============================================================
 // 11Eleven — UI + Logic Script (Stable Non-Module Version)
 // =============================================================
@@ -54,6 +56,8 @@ const storedEarly = localStorage.getItem(EARLY_UNLOCKED_KEY) === "true";
 const storedDeep = localStorage.getItem(DEEPER_UNLOCKED_KEY) === "true";
 const hasEarlyParam = params.get("access") === "granted";
 const hasDeepParam = params.get("deeper") === "granted";
+
+setInterval(pingServer, 60000); // ping every 60s to keep Render warm
 
 if (!hasEarlyParam && !hasDeepParam) {
   if (storedEarly) {
