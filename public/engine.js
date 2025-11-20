@@ -1,3 +1,5 @@
+const API_BASE = "https://one1eleven-backend.onrender.com";
+
 import { resolveGeoContext } from "./js/geoContext.js";
 import { recordGlobal, getGlobalTrend } from "./js/globalEvolution.js";
 
@@ -181,7 +183,7 @@ window.Engine = window.Engine || {};
     async function getFeedbackState() {
         if (feedbackStateCache) return feedbackStateCache;
         if (!feedbackStatePromise) {
-            feedbackStatePromise = fetch("/api/user-feedback", {
+            feedbackStatePromise = fetch(`${API_BASE}/api/user-feedback`, {
                 cache: "no-store"
             })
                 .then((res) => {
@@ -235,7 +237,7 @@ window.Engine = window.Engine || {};
         ) {
             geoSynced = true;
             try {
-                await fetch("/api/user-geo", {
+                await fetch(`${API_BASE}/api/user-geo`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(resolved)
@@ -256,7 +258,7 @@ window.Engine = window.Engine || {};
     async function setLanguage(langCode, options = {}) {
         if (!supportedLanguages[langCode]) return false;
         try {
-            const res = await fetch("/api/user-language", {
+            const res = await fetch(`${API_BASE}/api/user-language`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ language: langCode })
@@ -842,7 +844,7 @@ window.Engine = window.Engine || {};
         // Call your backend
         let response;
         try {
-            response = await fetch("http://localhost:8787/api/prophecy", {
+            response = await fetch(`${API_BASE}/api/prophecy`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -871,7 +873,7 @@ window.Engine = window.Engine || {};
         updatePersona(emotion);
 
         try {
-            await fetch("/api/user-insights", {
+            await fetch(`${API_BASE}/api/user-insights`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ theme: finalThemeKey })
