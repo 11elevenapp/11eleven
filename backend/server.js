@@ -4,23 +4,22 @@
 // -----------------------------------------------------------
 
 import express from "express";
-import path from "path";
 import dotenv from "dotenv";
-import { fileURLToPath } from "url";
 import OpenAI from "openai";
 import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
-// Paths
+const app = express();
+
+// Enable static file serving from the /public folder
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express();
+app.use(express.static(path.join(__dirname, "../public")));
 app.use(express.json({ limit: "25mb" }));
-
-// Serve static client files
-app.use(express.static(path.join(__dirname, "..", "public")));
 
 const USER_DATA_PATH = path.join(__dirname, "..", "public", "userData.json");
 const USER_DATA_DEFAULT = {
@@ -578,11 +577,14 @@ app.post("/api/user-geo", async (req, res) => {
   }
 });
 
-// ---------------------------------------------------------------------
-// ROOT SERVE
-// ---------------------------------------------------------------------
+// Serve index.html on the root route
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+  res.sendFile(path.join(__dirname, "../public/index.html"));
+});
+
+// Catch-all route for unmatched paths
+app.get("*", (req, res) => {
+  res.status(404).send("Not Found");
 });
 
 // ---------------------------------------------------------------------
