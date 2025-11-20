@@ -578,18 +578,14 @@ app.post("/api/user-geo", async (req, res) => {
   }
 });
 
+// PING (warm-up / health check)
 app.get("/ping", (req, res) => {
   res.send("pong");
 });
 
-// ROOT ROUTE
+// Simple root health route (backend only)
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
-});
-
-// Catch-all route for unmatched paths
-app.get("*", (req, res) => {
-  res.status(404).send("Not Found");
+  res.send("11Eleven backend is running");
 });
 
 // ---------------------------------------------------------------------
@@ -597,5 +593,5 @@ app.get("*", (req, res) => {
 // ---------------------------------------------------------------------
 const PORT = process.env.PORT || 8787;
 app.listen(PORT, () => {
-  console.log(`🔮 11Eleven Oracle running at http://localhost:${PORT}`);
+  console.log(`🔮 11Eleven Oracle running on port ${PORT}`);
 });
