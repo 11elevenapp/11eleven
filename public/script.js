@@ -34,42 +34,16 @@ function updateProphecyView(result, auraMode) {
   currentResult = result;
   lastProphecy = result.prophecy;
   prophecyText.textContent = result.prophecy;
+  localStorage.removeItem("earlyProphecy");
+  localStorage.removeItem("lastPaidProphecy");
+  localStorage.removeItem("lastProphecy");
   auraEl.style.background = Engine.getAuraGradient(result.aura, auraMode);
 }
 
-function getSavedProphecy(key) {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function renderSavedProphecy(saved) {
-  if (!saved) return;
-  modal.classList.remove("hidden");
-  updateProphecyView(saved, saved.mode || "base");
-}
-
-const storedEarly = localStorage.getItem(EARLY_UNLOCKED_KEY) === "true";
-const storedDeep = localStorage.getItem(DEEPER_UNLOCKED_KEY) === "true";
 const hasEarlyParam = params.get("access") === "granted";
 const hasDeepParam = params.get("deeper") === "granted";
 
 setInterval(pingServer, 60000); // ping every 60s to keep Render warm
-
-if (!hasEarlyParam && !hasDeepParam) {
-  if (storedEarly) {
-    const saved = getSavedProphecy(EARLY_PROPHECY_KEY);
-    if (saved) renderSavedProphecy(saved);
-  }
-
-  if (storedDeep) {
-    const saved = getSavedProphecy(DEEPER_PROPHECY_KEY);
-    if (saved) renderSavedProphecy(saved);
-  }
-}
 
 // =============================================================
 // COUNTDOWN TO 11:11 (AM + PM)
@@ -165,27 +139,16 @@ earlyBtn.addEventListener("click", () => {
 if (hasEarlyParam) {
   window.history.replaceState({}, document.title, window.location.pathname);
 
-  const alreadyUnlocked = localStorage.getItem(EARLY_UNLOCKED_KEY) === "true";
+  setTimeout(async () => {
+    modal.classList.remove("hidden");
+    prophecyText.textContent = "✨ Your portal is open. Tuning to your energy…";
 
-  if (alreadyUnlocked) {
-    const saved = getSavedProphecy(EARLY_PROPHECY_KEY);
-    if (saved) {
-      renderSavedProphecy(saved);
-    } else {
-      window.location.href = STRIPE_EARLY;
-    }
-  } else {
-    setTimeout(async () => {
-      modal.classList.remove("hidden");
-      prophecyText.textContent = "✨ Your portal is open. Tuning to your energy…";
-
-      const res = await Engine.requestProphecy("early_access");
-      res.mode = "boosted";
-      updateProphecyView(res, "boosted");
-      localStorage.setItem(EARLY_UNLOCKED_KEY, "true");
-      localStorage.setItem(EARLY_PROPHECY_KEY, JSON.stringify(res));
-    }, 1500);
-  }
+    const res = await Engine.requestProphecy("early_access");
+    res.mode = "boosted";
+    updateProphecyView(res, "boosted");
+    localStorage.setItem(EARLY_UNLOCKED_KEY, "true");
+    localStorage.setItem(EARLY_PROPHECY_KEY, JSON.stringify(res));
+  }, 1500);
 }
 
 // =============================================================
@@ -199,27 +162,16 @@ deepBtn.addEventListener("click", () => {
 if (hasDeepParam) {
   window.history.replaceState({}, document.title, window.location.pathname);
 
-  const alreadyUnlocked = localStorage.getItem(DEEPER_UNLOCKED_KEY) === "true";
+  setTimeout(async () => {
+    modal.classList.remove("hidden");
+    prophecyText.textContent = "🌌 The veil parts further… tuning in.";
 
-  if (alreadyUnlocked) {
-    const saved = getSavedProphecy(DEEPER_PROPHECY_KEY);
-    if (saved) {
-      renderSavedProphecy(saved);
-    } else {
-      window.location.href = STRIPE_DEEP;
-    }
-  } else {
-    setTimeout(async () => {
-      modal.classList.remove("hidden");
-      prophecyText.textContent = "🌌 The veil parts further… tuning in.";
-
-      const res = await Engine.requestProphecy("deeper_access");
-      res.mode = "deep";
-      updateProphecyView(res, "deep");
-      localStorage.setItem(DEEPER_UNLOCKED_KEY, "true");
-      localStorage.setItem(DEEPER_PROPHECY_KEY, JSON.stringify(res));
-    }, 1500);
-  }
+    const res = await Engine.requestProphecy("deeper_access");
+    res.mode = "deep";
+    updateProphecyView(res, "deep");
+    localStorage.setItem(DEEPER_UNLOCKED_KEY, "true");
+    localStorage.setItem(DEEPER_PROPHECY_KEY, JSON.stringify(res));
+  }, 1500);
 }
 
 // =============================================================

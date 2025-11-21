@@ -10,29 +10,15 @@
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
 </head>
-
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const ua = navigator.userAgent || "";
+document.addEventListener("DOMContentLoaded", () => {
+  const ua = navigator.userAgent.toLowerCase();
+  const isInstagram = ua.includes("instagram");
 
-    // Detect Instagram in-app browser
-    if (ua.includes("Instagram")) {
-
-        document.body.innerHTML = `
-        <div style="padding:40px; text-align:center; color:white; font-family:Inter;">
-            <h2 style="font-size:28px; margin-bottom:14px;">📲 Open 11Eleven in Your Browser</h2>
-            <p style="opacity:0.85; font-size:17px;">
-                Instagram blocks downloads and sharing features.<br><br>
-                Tap below to open 11Eleven with full functionality.
-            </p>
-            <a href="https://11eleven.app"
-               style="display:inline-block; margin-top:26px; padding:16px 26px;
-               background:#4A8CFF; border-radius:16px; color:white; font-weight:700;
-               text-decoration:none; font-size:18px;">
-               Open in Safari / Chrome
-            </a>
-        </div>`;
-    }
+  if (isInstagram) {
+    // Trigger Instagram’s native "open external app" popup
+    window.location.href = "https://11eleven.app/?external=1";
+  }
 });
 </script>
 

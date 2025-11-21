@@ -9,6 +9,7 @@ import OpenAI from "openai";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import creatorRoutes from "./routes/creator.js";
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ const __dirname = path.dirname(__filename);
 // STATIC FILES
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json({ limit: "25mb" }));
+app.use("/creator", creatorRoutes);
 
 const USER_DATA_PATH = path.join(__dirname, "..", "public", "userData.json");
 const USER_DATA_DEFAULT = {
