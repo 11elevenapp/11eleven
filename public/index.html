@@ -16,8 +16,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const isInstagram = ua.includes("instagram");
 
   if (isInstagram) {
-    // Trigger Instagram’s native "open external app" popup
-    window.location.href = "https://11eleven.app/?external=1";
+    // Wait a moment so IG WebView doesn't freak out
+    setTimeout(() => {
+      const link = document.createElement("a");
+      link.href = "https://11eleven.app/?external=1";
+      link.style.display = "none";
+      link.target = "_blank";
+      document.body.appendChild(link);
+
+      // Simulate a user click
+      link.click();
+    }, 800);
   }
 });
 </script>
