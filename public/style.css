@@ -365,21 +365,23 @@ html,body{
   opacity: 1;
   pointer-events: auto;
 }
+
 .share-modal-container {
-  width: min(92vw, 520px);
+  width: min(94vw, 560px);
   background: rgba(16, 18, 30, 0.92);
-  border-radius: 24px;
+  border-radius: 26px;
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
-  padding: 28px;
-  max-height: 90vh !important;
+  padding: 34px 28px;
+  max-height: 94vh !important;      /* ⬆️ More vertical room */
   overflow-y: auto !important;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;                         /* ⬇️ Reduce spacing between elements */
   position: relative;
   animation: shareModalFade 0.25s ease;
   font-family: "Inter", system-ui, sans-serif;
 }
+
 @keyframes shareModalFade {
   from { transform: translateY(10px) scale(0.98); opacity: 0; }
   to { transform: translateY(0) scale(1); opacity: 1; }

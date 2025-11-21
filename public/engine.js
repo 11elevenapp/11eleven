@@ -885,7 +885,7 @@ window.Engine = window.Engine || {};
         // 11:11 polish (keep your existing format)
         let finalText = baseText;
         if (portal11) {
-            finalText = `✨ 11:11 ✨ ${finalText}`;
+            finalText = `✨ 11:11 ✨ \n\n${finalText}`;
         }
 
         // Cinematic suffix (VERY LIGHT)
