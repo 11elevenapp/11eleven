@@ -132,41 +132,29 @@
   <script type="module" src="/script.js"></script>
 
   <script>
-// Handle Instagram/Facebook external browser redirect actions
-(function () {
-  const params = new URLSearchParams(window.location.search);
-  const action = params.get("openExternal");
+  // Run external actions AFTER the page is fully ready
+  document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const action = params.get("do");
 
-  if (!action) return;
+    if (!action) return;
 
-  // Delay action so Chrome/Safari receives the query before cleanup
-  setTimeout(() => {
-    if (action === "save" && window.saveCardImage) {
-      window.saveCardImage();
-    }
-    if (action === "share" && window.openShareFlow) {
-      window.openShareFlow();
-    }
+    // Delay ensures the app UI + card system is fully loaded
+    setTimeout(() => {
+      if (action === "save") {
+        if (window.downloadCard) {
+          window.downloadCard();
+        }
+      }
 
-    // Cleanup AFTER running the action
-    window.history.replaceState({}, "", "/");
-
-  }, 500);
-})();
+      if (action === "share") {
+        if (window.generateAndShareCard) {
+          window.generateAndShareCard();
+        }
+      }
+    }, 350);
+  });
 </script>
-
-  <script>
-  const params = new URLSearchParams(window.location.search);
-  const action = params.get("externalAction");
-
-  if (action === "share" && window.generateAndShareCard) {
-      window.generateAndShareCard();
-  }
-
-  if (action === "save" && window.downloadCard) {
-      window.downloadCard();
-  }
-  </script>
 
 </body>
 </html>
