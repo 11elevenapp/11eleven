@@ -155,6 +155,18 @@
 })();
 </script>
 
+  <script>
+  const params = new URLSearchParams(window.location.search);
+  const action = params.get("externalAction");
+
+  if (action === "share" && window.generateAndShareCard) {
+      window.generateAndShareCard();
+  }
+
+  if (action === "save" && window.downloadCard) {
+      window.downloadCard();
+  }
+  </script>
 
 </body>
 </html>

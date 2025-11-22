@@ -371,7 +371,10 @@ window.Engine = window.Engine || {};
     // =============================================================
     function is11PortalNow() {
         const n = new Date();
-        return n.getHours() === 11 && n.getMinutes() === 11;
+        const hours = n.getHours();
+        const minutes = n.getMinutes();
+        const isPortal1111 = ((hours === 11 || hours === 23) && minutes === 11);
+        return isPortal1111;
     }
 
     // =============================================================
