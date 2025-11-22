@@ -224,6 +224,16 @@
   }
 
   async function handleShare(overlay, button) {
+    const inAppBrowser =
+      (typeof window.isInstagram === "function" && window.isInstagram()) ||
+      (typeof window.isFacebook === "function" && window.isFacebook());
+    if (inAppBrowser) {
+      if (typeof window.redirectToExternal === "function") {
+        window.redirectToExternal("share");
+      }
+      return;
+    }
+
     const container = overlay.querySelector(".share-modal-container");
     const cardUrl = container?.dataset?.cardUrl;
     const caption = container?.dataset?.caption || "";
@@ -301,8 +311,13 @@
   }
 
   function handleSave(overlay, button) {
-    if (isInstagram()) {
-      redirectToExternal("save");
+    const inAppBrowser =
+      (typeof window.isInstagram === "function" && window.isInstagram()) ||
+      (typeof window.isFacebook === "function" && window.isFacebook());
+    if (inAppBrowser) {
+      if (typeof window.redirectToExternal === "function") {
+        window.redirectToExternal("save");
+      }
       return;
     }
 

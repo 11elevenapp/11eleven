@@ -49,15 +49,21 @@ window.redirectToExternal = redirectToExternal;
 function updateProphecyView(result, auraMode) {
   if (!result) return;
   currentResult = result;
-  lastProphecy = result.prophecy;
+  const rawText = typeof result.text === "string" ? result.text : (result.prophecy || "");
+  lastProphecy = rawText;
+  // Remove inline “✨ 11:11 ✨” or “11:11” text from prophecy body
+  let cleanedText = rawText
+    .replace(/✨\s*11:11\s*✨/gi, "")
+    .replace(/11:11/gi, "")
+    .trim();
   // Render prophecy text with optional 11:11 banner
   if (result.isPortal1111) {
     prophecyText.innerHTML = `
     <div class="portal-banner">✨ 11:11 ✨</div>
-    <p>${result.prophecy}</p>
+    <p>${cleanedText}</p>
   `;
   } else {
-    prophecyText.innerHTML = `<p>${result.prophecy}</p>`;
+    prophecyText.innerHTML = `<p>${cleanedText}</p>`;
   }
   localStorage.removeItem("earlyProphecy");
   localStorage.removeItem("lastPaidProphecy");
@@ -203,12 +209,6 @@ if (hasDeepParam) {
 // SHARE BUTTON
 // =============================================================
 shareBtn.addEventListener("click", async () => {
-  // Instagram cannot share inside WebView — escape to external browser
-  if (isInstagram()) {
-    redirectToExternal("share");
-    return;
-  }
-
   try {
     if (!currentResult || !lastProphecy) {
       alert("No prophecy available to share yet.");
