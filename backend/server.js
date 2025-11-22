@@ -317,6 +317,7 @@ const CATEGORY_DESCRIPTIONS = {
   truth: "being honest with yourself about what is real and what is not",
   self_worth: "believing you deserve a better life and better choices",
   intuition: "trusting the quiet inner knowing that keeps trying to speak up",
+  manifesting: "the process of turning an inner intention into an outer reality",
   general: "one clear, emotionally honest realization",
 };
 
@@ -396,6 +397,7 @@ The sentence should feel like:
 - insight without mysticism
 
 Focus this sentence on the theme of ${focusDescription}.
+Subtly reflect the idea of manifesting — clear intention shaping real outcomes — without using mystical language.
 
 ${metaTone}
 ${antiRepeat}
@@ -415,6 +417,7 @@ Do NOT repeat the surface-level idea.
 Go one layer deeper.
 
 Focus this deeper sentence on the theme of ${focusDescription}.
+Subtly reflect the idea of manifesting — clear intention shaping real outcomes — without using mystical language.
 
 ${metaTone}
 ${antiRepeat}

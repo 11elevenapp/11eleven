@@ -235,9 +235,6 @@
   }
 
   async function handleShare(overlay, button) {
-    redirectToExternal("share");
-    return;
-
     const container = overlay.querySelector(".share-modal-container");
     const cardUrl = container?.dataset?.cardUrl;
     const caption = container?.dataset?.caption || "";
@@ -246,6 +243,8 @@
       alert("Share card is still loading. Try again in a moment.");
       return;
     }
+
+    window.open(cardUrl, "_blank");
 
     const filename = makeFileName();
     const originalText = button?.textContent;
@@ -315,15 +314,15 @@
   }
 
   function handleSave(overlay, button) {
-    redirectToExternal("save");
-    return;
-
     const container = overlay.querySelector(".share-modal-container");
     const cardUrl = container?.dataset?.cardUrl;
     if (!cardUrl) {
       alert("Share card is still loading. Try again in a moment.");
       return;
     }
+
+    window.open(cardUrl, "_blank");
+
     const filename = makeFileName();
     const originalText = button?.textContent;
     if (button) {

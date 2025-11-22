@@ -105,5 +105,35 @@ window.generateShareCard = async function (payload) {
     }
 };
 
-// Expose globally (used by external-action handler)
-window.generateAndShareCard = window.generateAndShareCard || window.generateShareCard;
+// Legacy helpers for external triggers
+async function downloadCard(payload) {
+    const cardUrl = payload?.cardDataURL || (payload ? await window.generateShareCard(payload) : null);
+    if (!cardUrl) {
+        alert("Cannot download card: Missing card data.");
+        return null;
+    }
+
+    const filename = `1111-prophecy-${Date.now()}.png`;
+    const a = document.createElement("a");
+    a.href = cardUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    if (!a.download) {
+        window.open(cardUrl, "_blank");
+    }
+
+    return cardUrl;
+}
+
+async function generateAndShareCard(payload) {
+    const cardUrl = await window.generateShareCard(payload);
+    if (!cardUrl) return null;
+    window.open(cardUrl, "_blank");
+    return cardUrl;
+}
+
+window.downloadCard = window.downloadCard || downloadCard;
+window.generateAndShareCard = window.generateAndShareCard || generateAndShareCard;
