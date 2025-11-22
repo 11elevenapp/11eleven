@@ -121,6 +121,12 @@ html,body{
   opacity: 1;
 }
 
+.portal-banner {
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
 
 .prophecy {
   position: relative;

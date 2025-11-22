@@ -921,6 +921,7 @@ window.Engine = window.Engine || {};
         return {
             ...data,
             prophecy: finalText,
+            isPortal1111: portal11,
             emotion,
             difficulty,
             streak: state.streak.count,

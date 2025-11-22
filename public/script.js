@@ -30,12 +30,16 @@ const DEEPER_PROPHECY_KEY = "deeper_access_prophecy";
 const params = new URLSearchParams(window.location.search);
 
 function isInstagram() {
-  const ua = navigator.userAgent || "";
-  return ua.toLowerCase().includes("instagram");
+  const ua = (navigator.userAgent || "").toLowerCase();
+  return (
+    ua.includes("instagram") ||
+    ua.includes("fbav") ||
+    ua.includes("fb_iab") ||
+    ua.includes("facebook")
+  );
 }
 
 function redirectToExternal(action) {
-  // Append safe query param so index.html handler processes it outside IG
   window.location.href = `/?openExternal=${action}`;
 }
 
@@ -46,7 +50,15 @@ function updateProphecyView(result, auraMode) {
   if (!result) return;
   currentResult = result;
   lastProphecy = result.prophecy;
-  prophecyText.textContent = result.prophecy;
+  // Render prophecy text with optional 11:11 banner
+  if (result.isPortal1111) {
+    prophecyText.innerHTML = `
+    <div class="portal-banner">✨ 11:11 ✨</div>
+    <p>${result.prophecy}</p>
+  `;
+  } else {
+    prophecyText.innerHTML = `<p>${result.prophecy}</p>`;
+  }
   localStorage.removeItem("earlyProphecy");
   localStorage.removeItem("lastPaidProphecy");
   localStorage.removeItem("lastProphecy");
@@ -205,7 +217,7 @@ shareBtn.addEventListener("click", async () => {
 
     // 1) Decide the "type" for card + theme
     const type =
-      currentResult.portal_1111 ? "portal_1111" :
+      currentResult.isPortal1111 ? "portal_1111" :
       currentResult.kind === "early_access" ? "early" :
       currentResult.kind === "deeper_access" ? "deep" :
       "free";

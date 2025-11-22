@@ -132,29 +132,26 @@
   <script type="module" src="/script.js"></script>
 
   <script>
-window.history.replaceState({}, document.title, "/");
-</script>
-
-  <script>
-// Handle Instagram external browser redirect actions
+// Handle Instagram/Facebook external browser redirect actions
 (function () {
   const params = new URLSearchParams(window.location.search);
   const action = params.get("openExternal");
 
   if (!action) return;
 
-  // Clean the URL immediately so refreshing does NOT repeat the action
-  window.history.replaceState({}, "", "/");
-
-  // Delay slightly to allow the page to settle after Instagram opens Chrome/Safari
+  // Delay action so Chrome/Safari receives the query before cleanup
   setTimeout(() => {
-    if (action === "save") {
-      if (window.saveCardImage) window.saveCardImage();
+    if (action === "save" && window.saveCardImage) {
+      window.saveCardImage();
     }
-    if (action === "share") {
-      if (window.openShareFlow) window.openShareFlow();
+    if (action === "share" && window.openShareFlow) {
+      window.openShareFlow();
     }
-  }, 400);
+
+    // Cleanup AFTER running the action
+    window.history.replaceState({}, "", "/");
+
+  }, 500);
 })();
 </script>
 
