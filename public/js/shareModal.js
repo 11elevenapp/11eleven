@@ -1,6 +1,17 @@
 (function () {
   const API_BASE = "https://one1eleven-backend.onrender.com";
 
+  function redirectToExternal(action) {
+    const target = `https://11eleven.app/?do=${action}`;
+
+    if (/Android/i.test(navigator.userAgent)) {
+      window.location.href =
+        `intent://${target.replace('https://', '')}#Intent;scheme=https;package=com.android.chrome;end`;
+    } else {
+      window.open(target, '_blank');
+    }
+  }
+
   // 🔥 Ensure modal overlay exists in the DOM
   (function initShareModal() {
     if (!document.getElementById("share-modal-overlay")) {
@@ -224,15 +235,8 @@
   }
 
   async function handleShare(overlay, button) {
-    const inAppBrowser =
-      (typeof window.isInstagram === "function" && window.isInstagram()) ||
-      (typeof window.isFacebook === "function" && window.isFacebook());
-    if (inAppBrowser) {
-      if (typeof window.redirectToExternal === "function") {
-        window.redirectToExternal("share");
-      }
-      return;
-    }
+    redirectToExternal("share");
+    return;
 
     const container = overlay.querySelector(".share-modal-container");
     const cardUrl = container?.dataset?.cardUrl;
@@ -311,15 +315,8 @@
   }
 
   function handleSave(overlay, button) {
-    const inAppBrowser =
-      (typeof window.isInstagram === "function" && window.isInstagram()) ||
-      (typeof window.isFacebook === "function" && window.isFacebook());
-    if (inAppBrowser) {
-      if (typeof window.redirectToExternal === "function") {
-        window.redirectToExternal("save");
-      }
-      return;
-    }
+    redirectToExternal("save");
+    return;
 
     const container = overlay.querySelector(".share-modal-container");
     const cardUrl = container?.dataset?.cardUrl;

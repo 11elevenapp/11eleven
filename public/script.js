@@ -40,7 +40,14 @@ function isInstagram() {
 }
 
 function redirectToExternal(action) {
-  window.location.href = `/?openExternal=${action}`;
+  const target = `https://11eleven.app/?do=${action}`;
+
+  if (/Android/i.test(navigator.userAgent)) {
+    window.location.href =
+      `intent://${target.replace('https://', '')}#Intent;scheme=https;package=com.android.chrome;end`;
+  } else {
+    window.open(target, '_blank');
+  }
 }
 
 window.isInstagram = isInstagram;
