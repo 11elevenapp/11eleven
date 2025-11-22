@@ -10,26 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
 </head>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const ua = navigator.userAgent.toLowerCase();
-  const isInstagram = ua.includes("instagram");
-
-  if (isInstagram) {
-    // Wait a moment so IG WebView doesn't freak out
-    setTimeout(() => {
-      const link = document.createElement("a");
-      link.href = "https://11eleven.app/?external=1";
-      link.style.display = "none";
-      link.target = "_blank";
-      document.body.appendChild(link);
-
-      // Simulate a user click
-      link.click();
-    }, 800);
-  }
-});
-</script>
 
 <!-- Share Modal Root -->
 <div id="share-modal-root"></div>
@@ -153,6 +133,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   <script>
 window.history.replaceState({}, document.title, "/");
+</script>
+
+  <script>
+// Handle Instagram external browser redirect actions
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const action = params.get("openExternal");
+
+  if (!action) return;
+
+  // Clean the URL immediately so refreshing does NOT repeat the action
+  window.history.replaceState({}, "", "/");
+
+  // Delay slightly to allow the page to settle after Instagram opens Chrome/Safari
+  setTimeout(() => {
+    if (action === "save") {
+      if (window.saveCardImage) window.saveCardImage();
+    }
+    if (action === "share") {
+      if (window.openShareFlow) window.openShareFlow();
+    }
+  }, 400);
+})();
 </script>
 
 

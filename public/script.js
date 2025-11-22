@@ -29,6 +29,19 @@ const DEEPER_PROPHECY_KEY = "deeper_access_prophecy";
 
 const params = new URLSearchParams(window.location.search);
 
+function isInstagram() {
+  const ua = navigator.userAgent || "";
+  return ua.toLowerCase().includes("instagram");
+}
+
+function redirectToExternal(action) {
+  // Append safe query param so index.html handler processes it outside IG
+  window.location.href = `/?openExternal=${action}`;
+}
+
+window.isInstagram = isInstagram;
+window.redirectToExternal = redirectToExternal;
+
 function updateProphecyView(result, auraMode) {
   if (!result) return;
   currentResult = result;
@@ -178,6 +191,12 @@ if (hasDeepParam) {
 // SHARE BUTTON
 // =============================================================
 shareBtn.addEventListener("click", async () => {
+  // Instagram cannot share inside WebView — escape to external browser
+  if (isInstagram()) {
+    redirectToExternal("share");
+    return;
+  }
+
   try {
     if (!currentResult || !lastProphecy) {
       alert("No prophecy available to share yet.");

@@ -301,6 +301,11 @@
   }
 
   function handleSave(overlay, button) {
+    if (isInstagram()) {
+      redirectToExternal("save");
+      return;
+    }
+
     const container = overlay.querySelector(".share-modal-container");
     const cardUrl = container?.dataset?.cardUrl;
     if (!cardUrl) {
