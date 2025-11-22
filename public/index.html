@@ -132,28 +132,29 @@
   <script type="module" src="/script.js"></script>
 
   <script>
-  // Run external actions AFTER the page is fully ready
   document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const action = params.get("do");
-
     if (!action) return;
 
-    // Delay ensures the app UI + card system is fully loaded
-    setTimeout(() => {
-      if (action === "save") {
-        if (window.downloadCard) {
-          window.downloadCard();
-        }
-      }
+  // Poller — checks until the function exists, then fires it
+  function waitFor(fnName, callback) {
+    const fn = window[fnName];
+    if (typeof fn === "function") {
+      callback(fn);
+    } else {
+      setTimeout(() => waitFor(fnName, callback), 120);
+    }
+  }
 
-      if (action === "share") {
-        if (window.generateAndShareCard) {
-          window.generateAndShareCard();
-        }
-      }
-    }, 350);
-  });
+  if (action === "save") {
+    waitFor("downloadCard", (fn) => fn());
+  }
+
+  if (action === "share") {
+    waitFor("generateAndShareCard", (fn) => fn());
+  }
+});
 </script>
 
 </body>

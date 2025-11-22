@@ -355,3 +355,8 @@
     return window.ShareModal.close();
   };
 })();
+
+// Expose raw downloader for external redirect page
+window.downloadCard = window.downloadCard || downloadDataUrl;
+
+// (Share generator already exposed in shareCard.js)

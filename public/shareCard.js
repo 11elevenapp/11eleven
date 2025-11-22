@@ -104,3 +104,6 @@ window.generateShareCard = async function (payload) {
         return null;
     }
 };
+
+// Expose globally (used by external-action handler)
+window.generateAndShareCard = window.generateAndShareCard || window.generateShareCard;
