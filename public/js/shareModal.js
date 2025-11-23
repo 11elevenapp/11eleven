@@ -1,5 +1,15 @@
+function redirectToExternalURL(url) {
+  if (/Android/i.test(navigator.userAgent)) {
+    window.location.href =
+      `intent://${url.replace('https://','')}#Intent;scheme=https;package=com.android.chrome;end`;
+  } else {
+    window.open(url, '_blank');
+  }
+}
+
 (function () {
   const API_BASE = "https://one1eleven-backend.onrender.com";
+  const generateCardImage = window.generateCardImage || window.generateShareCard;
 
   function redirectToExternal(action) {
     // Build the payload page that Chrome/Safari will open
@@ -241,8 +251,15 @@
   }
 
   async function handleShare(overlay, button) {
-    redirectToExternal('share');
-    return;
+    (async () => {
+      const result = await generateCardImage();
+      if (!result || !result.base64) return;
+
+      const b64 = encodeURIComponent(result.base64);
+      const url = `https://exit.11eleven.app/viewcard.html?img=${b64}`;
+
+      redirectToExternalURL(url);
+    })();
   }
 
   async function tryNativeShare(cardUrl, caption, filename) {
@@ -290,8 +307,15 @@
   }
 
   function handleSave(overlay, button) {
-    redirectToExternal('save');
-    return;
+    (async () => {
+      const result = await generateCardImage();
+      if (!result || !result.base64) return;
+
+      const b64 = encodeURIComponent(result.base64);
+      const url = `https://exit.11eleven.app/viewcard.html?img=${b64}`;
+
+      redirectToExternalURL(url);
+    })();
   }
 
   window.ShareModal = window.ShareModal || {};

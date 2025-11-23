@@ -96,7 +96,12 @@ window.generateShareCard = async function (payload) {
 
         // ❌ no auto-download here
         // ✅ return PNG URL so script.js can use it in the modal
-        return imgURL;
+        return {
+            success: true,
+            url: imgURL,
+            base64: imgURL.split(",")[1],
+            isBase64: true
+        };
 
     } catch (err) {
         console.error("Final card export failed:", err);
@@ -107,7 +112,15 @@ window.generateShareCard = async function (payload) {
 
 // Legacy helpers for external triggers
 async function downloadCard(payload) {
-    const cardUrl = payload?.cardDataURL || (payload ? await window.generateShareCard(payload) : null);
+    const cardResult = payload?.cardDataURL
+        ? { url: payload.cardDataURL, base64: payload.cardDataURL.split(",")[1] }
+        : (payload ? await window.generateShareCard(payload) : null);
+
+    const cardUrl = typeof cardResult === "string" ? cardResult : cardResult?.url;
+    const base64Data = typeof cardResult === "string"
+        ? (cardResult.split(",")[1] || cardResult)
+        : cardResult?.base64;
+
     if (!cardUrl) {
         alert("Cannot download card: Missing card data.");
         return null;
@@ -122,7 +135,7 @@ async function downloadCard(payload) {
 
     // If IG/FB → return Base64 + filename instead of Blob URL.
     if (isIG || isFB) {
-        const base64 = cardUrl.split(",")[1] || cardUrl;
+        const base64 = base64Data || cardUrl.split(",")[1] || cardUrl;
         const url = cardUrl;
         return {
             base64,
@@ -148,7 +161,8 @@ async function downloadCard(payload) {
 }
 
 async function generateAndShareCard(payload) {
-    const cardUrl = await window.generateShareCard(payload);
+    const result = await window.generateShareCard(payload);
+    const cardUrl = typeof result === "string" ? result : result?.url;
     if (!cardUrl) return null;
     window.open(cardUrl, "_blank");
     return cardUrl;

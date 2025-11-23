@@ -236,10 +236,12 @@ shareBtn.addEventListener("click", async () => {
       "free";
 
     // 2) Generate the PNG card (no download yet)
-    const cardURL = await window.generateShareCard({
+    const cardResult = await window.generateShareCard({
       prophecy: lastProphecy,
       type
     });
+
+    const cardURL = cardResult?.url || cardResult;
 
     if (!cardURL) {
       console.error("No card URL returned from generateShareCard");
@@ -299,3 +301,12 @@ window.clearPaid = function () {
   localStorage.removeItem(DEEPER_PROPHECY_KEY);
   console.log("Paid state cleared.");
 };
+
+function redirectToExternalURL(url) {
+  if (/Android/i.test(navigator.userAgent)) {
+    window.location.href =
+      `intent://${url.replace('https://','')}#Intent;scheme=https;package=com.android.chrome;end`;
+  } else {
+    window.open(url, '_blank');
+  }
+}

@@ -1,18 +1,20 @@
-const base64 = sessionStorage.getItem("prophecyCard");
+document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const base64 = params.get('img');
 
-if (!base64) {
-  document.getElementById("cardContainer").innerHTML =
-    "<p class='error'>Could not load this prophecy card.</p>";
-} else {
-  const imgEl = document.getElementById("prophecyCard");
-  imgEl.src = "data:image/png;base64," + base64;
-}
+  if (!base64) {
+    console.error("No base64 image detected.");
+    return;
+  }
 
-document.getElementById("downloadBtn").onclick = () => {
-  if (!base64) return;
+  const img = document.getElementById("cardImage");
+  img.src = "data:image/png;base64," + base64;
 
-  const a = document.createElement("a");
-  a.href = "data:image/png;base64," + base64;
-  a.download = "prophecy.png";
-  a.click();
-};
+  // Download button
+  document.getElementById("downloadBtn").addEventListener("click", () => {
+    const a = document.createElement("a");
+    a.href = img.src;
+    a.download = "prophecy-card.png";
+    a.click();
+  });
+});
