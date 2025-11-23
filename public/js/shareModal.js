@@ -245,7 +245,8 @@
     }
 
     const result = {
-      base64: cardUrl,
+      base64: cardUrl.split(",")[1] || cardUrl,
+      url: cardUrl,
       isBase64: (() => {
         const ua = navigator.userAgent.toLowerCase();
         return ua.includes("instagram") || ua.includes("fbav") || ua.includes("fb_iab");
@@ -253,8 +254,8 @@
     };
 
     if (result.isBase64) {
-      const encoded = encodeURIComponent(result.base64);
-      window.location.href = `/viewcard.html?img=${encoded}`;
+      sessionStorage.setItem("prophecyCard", result.base64);
+      window.location.href = "/viewcard.html";
       return;
     }
 
@@ -334,7 +335,8 @@
     }
 
     const result = {
-      base64: cardUrl,
+      base64: cardUrl.split(",")[1] || cardUrl,
+      url: cardUrl,
       isBase64: (() => {
         const ua = navigator.userAgent.toLowerCase();
         return ua.includes("instagram") || ua.includes("fbav") || ua.includes("fb_iab");
@@ -342,8 +344,8 @@
     };
 
     if (result.isBase64) {
-      const encoded = encodeURIComponent(result.base64);
-      window.location.href = `/viewcard.html?img=${encoded}`;
+      sessionStorage.setItem("prophecyCard", result.base64);
+      window.location.href = "/viewcard.html";
       return;
     }
 

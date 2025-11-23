@@ -122,11 +122,14 @@ async function downloadCard(payload) {
 
     // If IG/FB → return Base64 + filename instead of Blob URL.
     if (isIG || isFB) {
-        const base64 = cardUrl;
+        const base64 = cardUrl.split(",")[1] || cardUrl;
+        const url = cardUrl;
         return {
             base64,
             filename,
-            isBase64: true
+            url,
+            isBase64: true,
+            success: true
         };
     }
 
