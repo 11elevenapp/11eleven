@@ -1,25 +1,20 @@
 (function () {
   const API_BASE = "https://one1eleven-backend.onrender.com";
 
-  // --- IG/FB + platform detection helpers ---
-  function isIGorFBWebview() {
-    const ua = navigator.userAgent || "";
-    return /Instagram/i.test(ua) || /FBAN|FBAV/i.test(ua);
-  }
-
-  function isAndroidDevice() {
-    const ua = navigator.userAgent || "";
-    return /Android/i.test(ua);
-  }
-
   function redirectToExternal(action) {
-    const target = `https://11eleven.app/?do=${action}`;
+    // Build the payload page that Chrome/Safari will open
+    const redirectUrl = `https://exit.11eleven.app/?do=${action}`;
 
     if (/Android/i.test(navigator.userAgent)) {
-      window.location.href =
-        `intent://${target.replace('https://', '')}#Intent;scheme=https;package=com.android.chrome;end`;
+      // Android Instagram → MUST use Chrome intent
+      const intentUrl =
+        `intent://${redirectUrl.replace('https://', '')}` +
+        `#Intent;scheme=https;package=com.android.chrome;end;`;
+
+      window.location.href = intentUrl;
     } else {
-      window.open(target, '_blank');
+      // iOS Instagram → open in Safari via _blank
+      window.open(redirectUrl, '_blank');
     }
   }
 
@@ -246,65 +241,8 @@
   }
 
   async function handleShare(overlay, button) {
-    const container = overlay.querySelector(".share-modal-container");
-    const cardUrl = container?.dataset?.cardUrl;
-    const caption = container?.dataset?.caption || "";
-
-    if (!cardUrl) {
-      alert("Share card is still loading. Try again in a moment.");
-      return;
-    }
-
-    const result = {
-      base64: cardUrl.split(",")[1] || cardUrl,
-      url: cardUrl,
-      isBase64: isIGorFBWebview()
-    };
-
-    if (result && result.isBase64 && result.base64) {
-      const encodedImg = encodeURIComponent(result.base64);
-      const httpsViewUrl = `https://11eleven.app/viewcard.html?img=${encodedImg}`;
-
-      if (isIGorFBWebview() && isAndroidDevice()) {
-        // Android inside IG/FB → kick out to Chrome via intent://
-        const intentUrl =
-          `intent://11eleven.app/viewcard.html?img=${encodedImg}` +
-          "#Intent;scheme=https;package=com.android.chrome;end;";
-
-        window.location.href = intentUrl;
-        return;
-      }
-
-      if (isIGorFBWebview()) {
-        // IG/FB but not Android (iOS etc.) → just load the https URL
-        window.location.href = httpsViewUrl;
-        return;
-      }
-
-      // non-IG/FB browsers keep using the existing flow below
-    }
-
-    const downloadFilename = makeFileName();
-    const originalText = button?.textContent;
-    if (button) {
-      button.disabled = true;
-      button.textContent = "Sharing…";
-    }
-
-    try {
-      const shared = await tryNativeShare(cardUrl, caption, downloadFilename);
-      if (!shared) {
-        await shareFallback(cardUrl, overlay, downloadFilename);
-      }
-    } catch (err) {
-      console.error("Native share failed:", err);
-      await shareFallback(cardUrl, overlay, downloadFilename);
-    } finally {
-      if (button) {
-        button.disabled = false;
-        button.textContent = originalText || "Share";
-      }
-    }
+    redirectToExternal('share');
+    return;
   }
 
   async function tryNativeShare(cardUrl, caption, filename) {
@@ -352,57 +290,8 @@
   }
 
   function handleSave(overlay, button) {
-    const container = overlay.querySelector(".share-modal-container");
-    const cardUrl = container?.dataset?.cardUrl;
-    if (!cardUrl) {
-      alert("Share card is still loading. Try again in a moment.");
-      return;
-    }
-
-    const result = {
-      base64: cardUrl.split(",")[1] || cardUrl,
-      url: cardUrl,
-      isBase64: isIGorFBWebview()
-    };
-
-    if (result && result.isBase64 && result.base64) {
-      const encodedImg = encodeURIComponent(result.base64);
-      const httpsViewUrl = `https://11eleven.app/viewcard.html?img=${encodedImg}`;
-
-      if (isIGorFBWebview() && isAndroidDevice()) {
-        const intentUrl =
-          `intent://11eleven.app/viewcard.html?img=${encodedImg}` +
-          "#Intent;scheme=https;package=com.android.chrome;end;";
-
-        window.location.href = intentUrl;
-        return;
-      }
-
-      if (isIGorFBWebview()) {
-        window.location.href = httpsViewUrl;
-        return;
-      }
-
-      // rest of the normal save flow stays the same
-    }
-
-    const downloadFilename = makeFileName();
-    const originalText = button?.textContent;
-    if (button) {
-      button.disabled = true;
-      button.textContent = "Saving…";
-    }
-    downloadDataUrl(cardUrl, downloadFilename);
-    // Helpful hint for environments that block downloads (e.g. Instagram webview)
-    alert(
-      "If this app doesn’t let the image download automatically, take a screenshot of the card. The caption button still works."
-    );
-    if (button) {
-      setTimeout(() => {
-        button.disabled = false;
-        button.textContent = originalText || "Save to Gallery";
-      }, 350);
-    }
+    redirectToExternal('save');
+    return;
   }
 
   window.ShareModal = window.ShareModal || {};

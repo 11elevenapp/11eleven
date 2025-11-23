@@ -40,13 +40,19 @@ function isInstagram() {
 }
 
 function redirectToExternal(action) {
-  const target = `https://11eleven.app/?do=${action}`;
+  // Build the payload page that Chrome/Safari will open
+  const redirectUrl = `https://exit.11eleven.app/?do=${action}`;
 
   if (/Android/i.test(navigator.userAgent)) {
-    window.location.href =
-      `intent://${target.replace('https://', '')}#Intent;scheme=https;package=com.android.chrome;end`;
+    // Android Instagram → MUST use Chrome intent
+    const intentUrl =
+      `intent://${redirectUrl.replace('https://', '')}` +
+      `#Intent;scheme=https;package=com.android.chrome;end;`;
+
+    window.location.href = intentUrl;
   } else {
-    window.open(target, '_blank');
+    // iOS Instagram → open in Safari via _blank
+    window.open(redirectUrl, '_blank');
   }
 }
 
