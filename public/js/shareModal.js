@@ -1,6 +1,17 @@
 (function () {
   const API_BASE = "https://one1eleven-backend.onrender.com";
 
+  // --- IG/FB + platform detection helpers ---
+  function isIGorFBWebview() {
+    const ua = navigator.userAgent || "";
+    return /Instagram/i.test(ua) || /FBAN|FBAV/i.test(ua);
+  }
+
+  function isAndroidDevice() {
+    const ua = navigator.userAgent || "";
+    return /Android/i.test(ua);
+  }
+
   function redirectToExternal(action) {
     const target = `https://11eleven.app/?do=${action}`;
 
@@ -247,16 +258,30 @@
     const result = {
       base64: cardUrl.split(",")[1] || cardUrl,
       url: cardUrl,
-      isBase64: (() => {
-        const ua = navigator.userAgent.toLowerCase();
-        return ua.includes("instagram") || ua.includes("fbav") || ua.includes("fb_iab");
-      })()
+      isBase64: isIGorFBWebview()
     };
 
-    if (result.isBase64) {
-      sessionStorage.setItem("prophecyCard", result.base64);
-      window.location.href = "/viewcard.html";
-      return;
+    if (result && result.isBase64 && result.base64) {
+      const encodedImg = encodeURIComponent(result.base64);
+      const httpsViewUrl = `https://11eleven.app/viewcard.html?img=${encodedImg}`;
+
+      if (isIGorFBWebview() && isAndroidDevice()) {
+        // Android inside IG/FB → kick out to Chrome via intent://
+        const intentUrl =
+          `intent://11eleven.app/viewcard.html?img=${encodedImg}` +
+          "#Intent;scheme=https;package=com.android.chrome;end;";
+
+        window.location.href = intentUrl;
+        return;
+      }
+
+      if (isIGorFBWebview()) {
+        // IG/FB but not Android (iOS etc.) → just load the https URL
+        window.location.href = httpsViewUrl;
+        return;
+      }
+
+      // non-IG/FB browsers keep using the existing flow below
     }
 
     const downloadFilename = makeFileName();
@@ -337,16 +362,28 @@
     const result = {
       base64: cardUrl.split(",")[1] || cardUrl,
       url: cardUrl,
-      isBase64: (() => {
-        const ua = navigator.userAgent.toLowerCase();
-        return ua.includes("instagram") || ua.includes("fbav") || ua.includes("fb_iab");
-      })()
+      isBase64: isIGorFBWebview()
     };
 
-    if (result.isBase64) {
-      sessionStorage.setItem("prophecyCard", result.base64);
-      window.location.href = "/viewcard.html";
-      return;
+    if (result && result.isBase64 && result.base64) {
+      const encodedImg = encodeURIComponent(result.base64);
+      const httpsViewUrl = `https://11eleven.app/viewcard.html?img=${encodedImg}`;
+
+      if (isIGorFBWebview() && isAndroidDevice()) {
+        const intentUrl =
+          `intent://11eleven.app/viewcard.html?img=${encodedImg}` +
+          "#Intent;scheme=https;package=com.android.chrome;end;";
+
+        window.location.href = intentUrl;
+        return;
+      }
+
+      if (isIGorFBWebview()) {
+        window.location.href = httpsViewUrl;
+        return;
+      }
+
+      // rest of the normal save flow stays the same
     }
 
     const downloadFilename = makeFileName();
