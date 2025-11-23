@@ -244,9 +244,10 @@
       return;
     }
 
-    window.open(cardUrl, "_blank");
+    const filename = cardUrl.split("/").pop();
+    window.open(`/viewcard.html?img=${encodeURIComponent(filename)}`, "_blank");
 
-    const filename = makeFileName();
+    const downloadFilename = makeFileName();
     const originalText = button?.textContent;
     if (button) {
       button.disabled = true;
@@ -254,13 +255,13 @@
     }
 
     try {
-      const shared = await tryNativeShare(cardUrl, caption, filename);
+      const shared = await tryNativeShare(cardUrl, caption, downloadFilename);
       if (!shared) {
-        await shareFallback(cardUrl, overlay, filename);
+        await shareFallback(cardUrl, overlay, downloadFilename);
       }
     } catch (err) {
       console.error("Native share failed:", err);
-      await shareFallback(cardUrl, overlay, filename);
+      await shareFallback(cardUrl, overlay, downloadFilename);
     } finally {
       if (button) {
         button.disabled = false;
@@ -321,15 +322,16 @@
       return;
     }
 
-    window.open(cardUrl, "_blank");
+    const filename = cardUrl.split("/").pop();
+    window.open(`/viewcard.html?img=${encodeURIComponent(filename)}`, "_blank");
 
-    const filename = makeFileName();
+    const downloadFilename = makeFileName();
     const originalText = button?.textContent;
     if (button) {
       button.disabled = true;
       button.textContent = "Saving…";
     }
-    downloadDataUrl(cardUrl, filename);
+    downloadDataUrl(cardUrl, downloadFilename);
     // Helpful hint for environments that block downloads (e.g. Instagram webview)
     alert(
       "If this app doesn’t let the image download automatically, take a screenshot of the card. The caption button still works."

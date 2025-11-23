@@ -125,7 +125,7 @@ async function downloadCard(payload) {
         window.open(cardUrl, "_blank");
     }
 
-    return cardUrl;
+    return { url: `/generated/${filename}`, filename };
 }
 
 async function generateAndShareCard(payload) {
