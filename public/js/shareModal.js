@@ -244,8 +244,19 @@
       return;
     }
 
-    const filename = cardUrl.split("/").pop();
-    window.open(`/viewcard.html?img=${encodeURIComponent(filename)}`, "_blank");
+    const result = {
+      base64: cardUrl,
+      isBase64: (() => {
+        const ua = navigator.userAgent.toLowerCase();
+        return ua.includes("instagram") || ua.includes("fbav") || ua.includes("fb_iab");
+      })()
+    };
+
+    if (result.isBase64) {
+      const encoded = encodeURIComponent(result.base64);
+      window.location.href = `/viewcard.html?img=${encoded}`;
+      return;
+    }
 
     const downloadFilename = makeFileName();
     const originalText = button?.textContent;
@@ -322,8 +333,19 @@
       return;
     }
 
-    const filename = cardUrl.split("/").pop();
-    window.open(`/viewcard.html?img=${encodeURIComponent(filename)}`, "_blank");
+    const result = {
+      base64: cardUrl,
+      isBase64: (() => {
+        const ua = navigator.userAgent.toLowerCase();
+        return ua.includes("instagram") || ua.includes("fbav") || ua.includes("fb_iab");
+      })()
+    };
+
+    if (result.isBase64) {
+      const encoded = encodeURIComponent(result.base64);
+      window.location.href = `/viewcard.html?img=${encoded}`;
+      return;
+    }
 
     const downloadFilename = makeFileName();
     const originalText = button?.textContent;

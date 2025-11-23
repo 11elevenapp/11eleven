@@ -114,6 +114,22 @@ async function downloadCard(payload) {
     }
 
     const filename = `1111-prophecy-${Date.now()}.png`;
+
+    // Detect IG/FB webview:
+    const ua = navigator.userAgent.toLowerCase();
+    const isIG = ua.includes("instagram");
+    const isFB = ua.includes("fbav") || ua.includes("fb_iab");
+
+    // If IG/FB → return Base64 + filename instead of Blob URL.
+    if (isIG || isFB) {
+        const base64 = cardUrl;
+        return {
+            base64,
+            filename,
+            isBase64: true
+        };
+    }
+
     const a = document.createElement("a");
     a.href = cardUrl;
     a.download = filename;
