@@ -123,6 +123,8 @@ const generateShareCard = window.generateShareCard;
 
       // save to session for redirect
       window.generatedCardBase64 = base64;
+      const container = document.querySelector(".share-modal-container");
+      if (container) container.dataset.cardUrl = base64;
 
       // update modal preview
       const preview = document.getElementById("sharePreview");
@@ -149,17 +151,22 @@ const generateShareCard = window.generateShareCard;
       img.src = cardDataURL || "";
     }
 
-    const captionText = [caption || "", hashtags || ""]
+    const resolvedCaption = typeof caption === "string" ? caption : (window.currentCaption || "");
+    const resolvedHashtags = typeof hashtags === "string" ? hashtags : (window.currentHashtags || "");
+
+    const captionText = [resolvedCaption || "", resolvedHashtags || ""]
       .map((part) => part.trim())
       .filter(Boolean)
       .join("\n\n");
 
-    textarea.value = captionText;
+    const finalCaption = captionText || window.currentCaption || "";
+
+    textarea.value = finalCaption;
 
     const resolvedCardType = cardType || theme || "free";
 
     container.dataset.cardUrl = cardDataURL || "";
-    container.dataset.caption = captionText || "";
+    container.dataset.caption = finalCaption || "";
     container.dataset.theme = theme || "default";
     container.dataset.cardType = resolvedCardType === "default" ? "free" : resolvedCardType;
     container.dataset.themeKey = themeKey || "";
@@ -201,9 +208,13 @@ const generateShareCard = window.generateShareCard;
     const primaryEmotion = container?.dataset?.primaryEmotion;
     const toneKey = container?.dataset?.toneKey;
     const language = container?.dataset?.lang || "en";
-    if (!reaction || !themeKey) {
-      alert("Theme data is still loading. Please try again.");
+    if (!reaction) {
+      alert("Reaction failed: missing reaction type.");
       return;
+    }
+    if (!themeKey) {
+      // Fallback so feedback still sends
+      console.warn("⚠ No themeKey found, sending neutral theme.");
     }
 
     const originalText = button.textContent;

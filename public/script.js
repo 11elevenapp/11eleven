@@ -51,6 +51,28 @@ function updateProphecyView(result, auraMode) {
   localStorage.removeItem("lastPaidProphecy");
   localStorage.removeItem("lastProphecy");
   auraEl.style.background = Engine.getAuraGradient(result.aura, auraMode);
+
+  const depth =
+    result.isPortal1111 ? "1111" :
+    result.kind === "deeper_access" ? "deeper" :
+    result.kind === "early_access" ? "early" :
+    "free";
+
+  const themeKey = result.themeKey || "default";
+  const primaryEmotion = result.emotion?.primary || "";
+  const toneKey = result.themeTone || "";
+  const language = result.language || "en";
+  const caption = rawText ? rawText.trim() : "";
+  const hashtags = window.getShareHashtags
+    ? window.getShareHashtags(themeKey, language, depth)
+    : "";
+
+  window.currentThemeKey = themeKey;
+  window.currentPrimaryEmotion = primaryEmotion;
+  window.currentToneKey = toneKey;
+  window.currentLanguage = language;
+  window.currentCaption = caption;
+  window.currentHashtags = hashtags;
 }
 
 const hasEarlyParam = params.get("access") === "granted";
@@ -203,8 +225,24 @@ window.clearPaid = function () {
 };
 
 function showShareModal() {
+  const cardURL = window.generatedCardBase64 || "";
+  const shareOptions = {
+    cardDataURL: cardURL,
+    themeKey: window.currentThemeKey || "default",
+    primaryEmotion: window.currentPrimaryEmotion || "",
+    tone: window.currentToneKey || "",
+    language: window.currentLanguage || "en",
+    caption: window.currentCaption || "",
+    hashtags: window.currentHashtags || ""
+  };
   if (typeof window.openShareModal === "function") {
-    window.openShareModal();
+    setTimeout(() => {
+      try {
+        window.openShareModal(shareOptions);
+      } catch (err) {
+        console.error("Failed to open share modal:", err);
+      }
+    }, 70);
     return;
   }
   const modal = document.getElementById("shareModal");
