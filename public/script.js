@@ -235,20 +235,7 @@ shareBtn.addEventListener("click", async () => {
       currentResult.kind === "deeper_access" ? "deep" :
       "free";
 
-    // 2) Generate the PNG card (no download yet)
-    const cardResult = await window.generateShareCard({
-      prophecy: lastProphecy,
-      type
-    });
-
-    const cardURL = cardResult?.url || cardResult;
-
-    if (!cardURL) {
-      console.error("No card URL returned from generateShareCard");
-      return;
-    }
-
-    // 3) Build caption + hashtags
+    // 2) Build caption + hashtags
     // theme/depth are up to you; this is a simple mapping:
     const depth =
       type === "portal_1111" ? "1111" :
@@ -262,9 +249,8 @@ shareBtn.addEventListener("click", async () => {
 
     const caption = lastProphecy;
 
-    // 4) Open the Share Modal with everything
+    // 3) Open the Share Modal with everything
     window.openShareModal({
-      cardDataURL: cardURL,
       theme: type === "portal_1111"
         ? "portal_1111"
         : type === "early"
@@ -277,7 +263,8 @@ shareBtn.addEventListener("click", async () => {
       themeKey: currentResult?.themeKey || "general",
       primaryEmotion: currentResult?.emotion?.primary || "",
       tone: currentResult?.themeTone || "",
-      language: currentResult?.language || "en"
+      language: currentResult?.language || "en",
+      cardType: type
     });
 
   } catch (err) {
@@ -310,3 +297,15 @@ function redirectToExternalURL(url) {
     window.open(url, '_blank');
   }
 }
+
+// 🔥 Guarantee prophecy survives redirects (IG/FB lose globals)
+window.addEventListener("beforeunload", () => {
+  try {
+    if (lastProphecy) {
+      sessionStorage.setItem("lastProphecy", lastProphecy);
+      window.currentProphecy = lastProphecy;
+    }
+  } catch (e) {
+    console.warn("Failed to persist prophecy", e);
+  }
+});

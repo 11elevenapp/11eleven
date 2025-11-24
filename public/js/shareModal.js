@@ -1,15 +1,32 @@
-function redirectToExternalURL(url) {
+const generateShareCard = window.generateShareCard;
+
+function redirectToExternalURL(base64) {
+  if (!base64) {
+    alert("Missing card image. Please try again.");
+    return;
+  }
+
+  const encoded = encodeURIComponent(base64);
+  const targetUrl = `https://exit.11eleven.app/viewcard.html?img=${encoded}`;
+
   if (/Android/i.test(navigator.userAgent)) {
     window.location.href =
-      `intent://${url.replace('https://','')}#Intent;scheme=https;package=com.android.chrome;end`;
+      `intent://${targetUrl.replace('https://','')}#Intent;scheme=https;package=com.android.chrome;end`;
   } else {
-    window.open(url, '_blank');
+    window.open(targetUrl, '_blank');
   }
 }
 
 (function () {
   const API_BASE = "https://one1eleven-backend.onrender.com";
-  const generateCardImage = window.generateCardImage || window.generateShareCard;
+
+  // 🔥 Restore prophecy if IG/FB nuked JS globals
+  if (!window.currentProphecy) {
+    const saved = sessionStorage.getItem("lastProphecy");
+    if (saved) {
+      window.currentProphecy = saved;
+    }
+  }
 
   function redirectToExternal(action) {
     // Build the payload page that Chrome/Safari will open
@@ -125,13 +142,13 @@ function redirectToExternalURL(url) {
     }
   }
 
-  function populateModal(overlay, { cardDataURL, theme, caption, hashtags, themeKey, primaryEmotion, tone, language }) {
+  function populateModal(overlay, { cardDataURL, theme, caption, hashtags, themeKey, primaryEmotion, tone, language, cardType }) {
     const container = overlay.querySelector(".share-modal-container");
     const img = container.querySelector("img");
     const textarea = container.querySelector(".share-modal-caption");
 
-    if (cardDataURL && img) {
-      img.src = cardDataURL;
+    if (img) {
+      img.src = cardDataURL || "";
     }
 
     const captionText = [caption || "", hashtags || ""]
@@ -141,9 +158,12 @@ function redirectToExternalURL(url) {
 
     textarea.value = captionText;
 
+    const resolvedCardType = cardType || theme || "free";
+
     container.dataset.cardUrl = cardDataURL || "";
     container.dataset.caption = captionText || "";
     container.dataset.theme = theme || "default";
+    container.dataset.cardType = resolvedCardType === "default" ? "free" : resolvedCardType;
     container.dataset.themeKey = themeKey || "";
     container.dataset.primaryEmotion = primaryEmotion || "";
     container.dataset.toneKey = tone || "";
@@ -250,18 +270,6 @@ function redirectToExternalURL(url) {
     }
   }
 
-  async function handleShare(overlay, button) {
-    (async () => {
-      const result = await generateCardImage();
-      if (!result || !result.base64) return;
-
-      const b64 = encodeURIComponent(result.base64);
-      const url = `https://exit.11eleven.app/viewcard.html?img=${b64}`;
-
-      redirectToExternalURL(url);
-    })();
-  }
-
   async function tryNativeShare(cardUrl, caption, filename) {
     if (!navigator.share) return false;
 
@@ -306,23 +314,61 @@ function redirectToExternalURL(url) {
     );
   }
 
-  function handleSave(overlay, button) {
-    (async () => {
-      const result = await generateCardImage();
-      if (!result || !result.base64) return;
+  function normalizeCardType(type) {
+    if (type === "deeper") return "deep";
+    if (type === "default") return "free";
+    return type || "free";
+  }
 
-      const b64 = encodeURIComponent(result.base64);
-      const url = `https://exit.11eleven.app/viewcard.html?img=${b64}`;
+  async function handleShare(overlay, button) {
+    const container = overlay.querySelector(".share-modal-container");
+    const prophecy = (window.currentProphecy || "").trim();
+    const type = normalizeCardType(container?.dataset?.cardType);
+    if (!prophecy) {
+      alert("Missing prophecy");
+      return;
+    }
 
-      redirectToExternalURL(url);
-    })();
+    if (typeof generateShareCard !== "function") {
+      alert("Share is unavailable right now. Please try again.");
+      return;
+    }
+
+    const result = await generateShareCard({ prophecy, type });
+    if (!result?.success || !result.base64) {
+      alert("Missing prophecy");
+      return;
+    }
+
+    sessionStorage.setItem("sharedCardImage", result.base64);
+
+    redirectToExternalURL(result.base64);
+  }
+
+  async function handleSave(overlay, button) {
+    await handleShare(overlay, button);
   }
 
   window.ShareModal = window.ShareModal || {};
   window.ShareModal.open = openModal;
   window.ShareModal.close = closeModal;
 
-  window.openShareModal = function (options) {
+  window.openShareModal = function (options = {}) {
+    const prophecyEl = document.getElementById("prophecyText");
+    const renderedProphecy = prophecyEl?.textContent
+      ? prophecyEl.textContent.trim()
+      : "";
+
+    const prophecyFromOptions = typeof options.caption === "string"
+      ? options.caption.trim()
+      : "";
+
+    const finalProphecy = renderedProphecy || prophecyFromOptions;
+
+    if (finalProphecy) {
+      window.currentProphecy = finalProphecy;
+    }
+
     return window.ShareModal.open(options);
   };
 
