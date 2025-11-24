@@ -202,8 +202,16 @@ window.clearPaid = function () {
   console.log("Paid state cleared.");
 };
 
-// === Restore single Share button that opens the existing modal ===
-document.getElementById("openShareModalBtn")?.addEventListener("click", () => {
+function showShareModal() {
+  if (typeof window.openShareModal === "function") {
+    window.openShareModal();
+    return;
+  }
   const modal = document.getElementById("shareModal");
   if (modal) modal.style.display = "flex";
+}
+
+// === Restore single Share button that opens the existing modal ===
+document.getElementById("shareBtn")?.addEventListener("click", () => {
+  showShareModal();
 });
