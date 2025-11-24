@@ -524,15 +524,6 @@ footer {
   opacity: 0.65;
   cursor: wait;
 }
-.share-modal-share {
-  border: none;
-  background: linear-gradient(135deg, #38bdf8, #6366f1);
-  color: #081225;
-  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.35);
-}
-.share-modal-share:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
 .share-modal-save {
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.04);
@@ -565,9 +556,6 @@ footer {
 .share-modal-container[data-theme="portal_1111"] .share-modal-save {
   border-color: rgba(255, 215, 180, 0.35);
 }
-.share-modal-container[data-theme="portal_1111"] .share-modal-share {
-  box-shadow: 0 12px 32px rgba(255, 215, 180, 0.35);
-}
 .share-modal-container[data-theme="portal_1111"] .share-modal-copy {
   background: linear-gradient(135deg, #fff8e1, #f8d084);
 }
@@ -578,9 +566,6 @@ footer {
 }
 .share-modal-container[data-theme="early"] .share-modal-save {
   border-color: rgba(99, 102, 241, 0.45);
-}
-.share-modal-container[data-theme="early"] .share-modal-share {
-  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.35);
 }
 .share-modal-container[data-theme="early"] .share-modal-copy {
   background: linear-gradient(135deg, #8b5cf6, #312e81);
@@ -593,9 +578,6 @@ footer {
 }
 .share-modal-container[data-theme="deeper"] .share-modal-save {
   border-color: rgba(45, 212, 191, 0.45);
-}
-.share-modal-container[data-theme="deeper"] .share-modal-share {
-  box-shadow: 0 12px 32px rgba(45, 212, 191, 0.35);
 }
 .share-modal-container[data-theme="deeper"] .share-modal-copy {
   background: linear-gradient(135deg, #14b8a6, #2563eb);

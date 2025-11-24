@@ -47,7 +47,6 @@ const generateShareCard = window.generateShareCard;
             <button class="share-modal-copy">Copy Caption</button>
           </div>
           <div class="share-modal-main-buttons">
-            <button id="shareBtn" class="share-modal-btn share-modal-share">Share</button>
             <button id="saveGalleryBtn" class="share-modal-btn share-modal-save">Save to Gallery</button>
           </div>
           <button class="share-modal-close-btn">Close</button>
@@ -72,37 +71,6 @@ const generateShareCard = window.generateShareCard;
           setTimeout(() => textarea.classList.remove("copied"), 800);
         }
       });
-
-      const shareBtn = document.getElementById("shareBtn");
-      if (shareBtn && !shareBtn.dataset.boundShareHandler) {
-        shareBtn.dataset.boundShareHandler = "true";
-        // SHARE BUTTON (Native phone share sheet)
-        shareBtn.onclick = async () => {
-          try {
-            const base64 = window.generatedCardBase64;
-            if (!base64) {
-              alert("Card not generated yet.");
-              return;
-            }
-
-            const blob = await (await fetch(base64)).blob();
-            const file = new File([blob], "prophecy-card.png", { type: blob.type });
-
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-              await navigator.share({
-                title: "11Eleven Prophecy",
-                text: "Here is your prophecy ✨",
-                files: [file],
-              });
-            } else {
-              alert("Sharing not supported on this device. Try saving instead.");
-            }
-          } catch (err) {
-            console.error(err);
-            alert("Unable to share card.");
-          }
-        };
-      }
 
       const saveBtn = overlay.querySelector(".share-modal-save");
       if (saveBtn && !saveBtn.dataset.boundSaveHandler) {

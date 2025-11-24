@@ -8,7 +8,6 @@ import { pingServer } from "./js/ping.js";
 const revealBtn = document.getElementById("revealBtn");
 const earlyBtn = document.getElementById("earlyBtn");
 const deepBtn = document.getElementById("deepBtn");
-const shareBtn = document.getElementById("shareBtn");
 const closeBtn = document.getElementById("closeBtn");
 
 const countdownEl = document.getElementById("countdown");
@@ -187,62 +186,6 @@ if (hasDeepParam) {
     localStorage.setItem(DEEPER_PROPHECY_KEY, JSON.stringify(res));
   }, 1500);
 }
-
-// =============================================================
-// SHARE BUTTON
-// =============================================================
-shareBtn.addEventListener("click", async () => {
-  try {
-    if (!currentResult || !lastProphecy) {
-      alert("No prophecy available to share yet.");
-      return;
-    }
-
-    // 1) Decide the "type" for card + theme
-    const type =
-      currentResult.isPortal1111 ? "portal_1111" :
-      currentResult.kind === "early_access" ? "early" :
-      currentResult.kind === "deeper_access" ? "deep" :
-      "free";
-
-    // 2) Build caption + hashtags
-    // theme/depth are up to you; this is a simple mapping:
-    const depth =
-      type === "portal_1111" ? "1111" :
-      type === "deep" ? "deeper" :
-      type;
-
-    const theme = "clarity"; // or derive from currentResult.emotion.primary
-    const hashtags = window.getShareHashtags
-      ? window.getShareHashtags(theme, currentResult.language || "en", depth)
-      : "";
-
-    const caption = lastProphecy;
-
-    // 3) Open the Share Modal with everything
-    window.openShareModal({
-      theme: type === "portal_1111"
-        ? "portal_1111"
-        : type === "early"
-        ? "early"
-        : type === "deep"
-        ? "deeper"
-        : "default",
-      caption,
-      hashtags,
-      themeKey: currentResult?.themeKey || "general",
-      primaryEmotion: currentResult?.emotion?.primary || "",
-      tone: currentResult?.themeTone || "",
-      language: currentResult?.language || "en",
-      cardType: type
-    });
-
-  } catch (err) {
-    console.error("Share failed:", err);
-    alert("Something went wrong creating your share card.");
-  }
-});
-
 
 // =============================================================
 // CLOSE MODAL
