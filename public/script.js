@@ -29,36 +29,6 @@ const DEEPER_PROPHECY_KEY = "deeper_access_prophecy";
 
 const params = new URLSearchParams(window.location.search);
 
-function isInstagram() {
-  const ua = (navigator.userAgent || "").toLowerCase();
-  return (
-    ua.includes("instagram") ||
-    ua.includes("fbav") ||
-    ua.includes("fb_iab") ||
-    ua.includes("facebook")
-  );
-}
-
-function redirectToExternal(action) {
-  // Build the payload page that Chrome/Safari will open
-  const redirectUrl = `https://exit.11eleven.app/?do=${action}`;
-
-  if (/Android/i.test(navigator.userAgent)) {
-    // Android Instagram → MUST use Chrome intent
-    const intentUrl =
-      `intent://${redirectUrl.replace('https://', '')}` +
-      `#Intent;scheme=https;package=com.android.chrome;end;`;
-
-    window.location.href = intentUrl;
-  } else {
-    // iOS Instagram → open in Safari via _blank
-    window.open(redirectUrl, '_blank');
-  }
-}
-
-window.isInstagram = isInstagram;
-window.redirectToExternal = redirectToExternal;
-
 function updateProphecyView(result, auraMode) {
   if (!result) return;
   currentResult = result;
@@ -288,20 +258,3 @@ window.clearPaid = function () {
   localStorage.removeItem(DEEPER_PROPHECY_KEY);
   console.log("Paid state cleared.");
 };
-
-function redirectToExternalURL(url) {
-  if (/Android/i.test(navigator.userAgent)) {
-    window.location.href =
-      `intent://${url.replace('https://','')}#Intent;scheme=https;package=com.android.chrome;end`;
-  } else {
-    window.open(url, '_blank');
-  }
-}
-
-// 🔥 Guarantee prophecy survives IG/FB redirects
-window.addEventListener("beforeunload", () => {
-  if (lastProphecy) {
-    sessionStorage.setItem("lastProphecy", lastProphecy);
-    window.currentProphecy = lastProphecy;
-  }
-});

@@ -25,18 +25,6 @@
     window.location.href = "/aura/";
   }
 </script>
-<script>
-  const ua = navigator.userAgent || navigator.vendor || "";
-
-  // Detect IG or FB in-app browsers
-  const isInstagram = ua.includes("Instagram");
-  const isFacebook = ua.includes("FBAN") || ua.includes("FBAV");
-
-  if (isInstagram || isFacebook) {
-    // Force escape from IG/FB browser
-    window.location.replace("intent://11eleven.app/");
-  }
-</script>
   <main class="bg">
     <header class="topbar">
       <img src="./assets/1111-logo.png" alt="11eleven logo" class="siteLogo" />

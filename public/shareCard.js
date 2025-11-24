@@ -65,12 +65,13 @@ function buildAndExport({ prophecy, type }) {
                 scale: 2
             });
 
-            const pngUrl = canvas.toDataURL("image/png");
+            const dataUrl = canvas.toDataURL("image/png");
+            window.generatedCardBase64 = dataUrl;
 
             // Restore invisibility
             card.style.display = "none";
 
-            resolve(pngUrl);
+            resolve(dataUrl);
 
         } catch (err) {
             console.error("Share card error:", err);
@@ -109,64 +110,3 @@ window.generateShareCard = async function (payload) {
         return null;
     }
 };
-
-// Legacy helpers for external triggers
-async function downloadCard(payload) {
-    const cardResult = payload?.cardDataURL
-        ? { url: payload.cardDataURL, base64: payload.cardDataURL.split(",")[1] }
-        : (payload ? await window.generateShareCard(payload) : null);
-
-    const cardUrl = typeof cardResult === "string" ? cardResult : cardResult?.url;
-    const base64Data = typeof cardResult === "string"
-        ? (cardResult.split(",")[1] || cardResult)
-        : cardResult?.base64;
-
-    if (!cardUrl) {
-        alert("Cannot download card: Missing card data.");
-        return null;
-    }
-
-    const filename = `1111-prophecy-${Date.now()}.png`;
-
-    // Detect IG/FB webview:
-    const ua = navigator.userAgent.toLowerCase();
-    const isIG = ua.includes("instagram");
-    const isFB = ua.includes("fbav") || ua.includes("fb_iab");
-
-    // If IG/FB → return Base64 + filename instead of Blob URL.
-    if (isIG || isFB) {
-        const base64 = base64Data || cardUrl.split(",")[1] || cardUrl;
-        const url = cardUrl;
-        return {
-            base64,
-            filename,
-            url,
-            isBase64: true,
-            success: true
-        };
-    }
-
-    const a = document.createElement("a");
-    a.href = cardUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    if (!a.download) {
-        window.open(cardUrl, "_blank");
-    }
-
-    return { url: `/generated/${filename}`, filename };
-}
-
-async function generateAndShareCard(payload) {
-    const result = await window.generateShareCard(payload);
-    const cardUrl = typeof result === "string" ? result : result?.url;
-    if (!cardUrl) return null;
-    window.open(cardUrl, "_blank");
-    return cardUrl;
-}
-
-window.downloadCard = window.downloadCard || downloadCard;
-window.generateAndShareCard = window.generateAndShareCard || generateAndShareCard;

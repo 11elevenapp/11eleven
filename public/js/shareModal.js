@@ -1,47 +1,7 @@
 const generateShareCard = window.generateShareCard;
 
-function redirectToExternalURL(base64) {
-  if (!base64) {
-    alert("Missing card image. Please try again.");
-    return;
-  }
-
-  const encoded = encodeURIComponent(base64);
-  const targetUrl = `https://exit.11eleven.app/viewcard.html?img=${encoded}`;
-
-  if (/Android/i.test(navigator.userAgent)) {
-    window.location.href =
-      `intent://${targetUrl.replace('https://','')}#Intent;scheme=https;package=com.android.chrome;end`;
-  } else {
-    window.open(targetUrl, '_blank');
-  }
-}
-
 (function () {
-  // 🔥 Restore prophecy from session if IG/FB nuked window.currentProphecy
-  if (!window.currentProphecy) {
-    const saved = sessionStorage.getItem("lastProphecy");
-    if (saved) window.currentProphecy = saved;
-  }
-
   const API_BASE = "https://one1eleven-backend.onrender.com";
-
-  function redirectToExternal(action) {
-    // Build the payload page that Chrome/Safari will open
-    const redirectUrl = `https://exit.11eleven.app/?do=${action}`;
-
-    if (/Android/i.test(navigator.userAgent)) {
-      // Android Instagram → MUST use Chrome intent
-      const intentUrl =
-        `intent://${redirectUrl.replace('https://', '')}` +
-        `#Intent;scheme=https;package=com.android.chrome;end;`;
-
-      window.location.href = intentUrl;
-    } else {
-      // iOS Instagram → open in Safari via _blank
-      window.open(redirectUrl, '_blank');
-    }
-  }
 
   // 🔥 Ensure modal overlay exists in the DOM
   (function initShareModal() {
@@ -87,8 +47,8 @@ function redirectToExternalURL(base64) {
             <button class="share-modal-copy">Copy Caption</button>
           </div>
           <div class="share-modal-main-buttons">
-            <button class="share-modal-btn share-modal-share">Share</button>
-            <button class="share-modal-btn share-modal-save">Save to Gallery</button>
+            <button id="shareBtn" class="share-modal-btn share-modal-share">Share</button>
+            <button id="saveGalleryBtn" class="share-modal-btn share-modal-save">Save to Gallery</button>
           </div>
           <button class="share-modal-close-btn">Close</button>
         </div>
@@ -113,14 +73,60 @@ function redirectToExternalURL(base64) {
         }
       });
 
-      const shareBtn = overlay.querySelector(".share-modal-share");
-      if (shareBtn) {
-        shareBtn.addEventListener("click", () => handleShare(overlay, shareBtn));
+      const shareBtn = document.getElementById("shareBtn");
+      if (shareBtn && !shareBtn.dataset.boundShareHandler) {
+        shareBtn.dataset.boundShareHandler = "true";
+        // SHARE BUTTON (Native phone share sheet)
+        shareBtn.onclick = async () => {
+          try {
+            const base64 = window.generatedCardBase64;
+            if (!base64) {
+              alert("Card not generated yet.");
+              return;
+            }
+
+            const blob = await (await fetch(base64)).blob();
+            const file = new File([blob], "prophecy-card.png", { type: blob.type });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({
+                title: "11Eleven Prophecy",
+                text: "Here is your prophecy ✨",
+                files: [file],
+              });
+            } else {
+              alert("Sharing not supported on this device. Try saving instead.");
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Unable to share card.");
+          }
+        };
       }
 
       const saveBtn = overlay.querySelector(".share-modal-save");
-      if (saveBtn) {
-        saveBtn.addEventListener("click", () => handleSave(overlay, saveBtn));
+      if (saveBtn && !saveBtn.dataset.boundSaveHandler) {
+        saveBtn.dataset.boundSaveHandler = "true";
+        // SAVE TO GALLERY (Native browser image download)
+        document.getElementById("saveGalleryBtn").onclick = async () => {
+          try {
+            const base64 = window.generatedCardBase64;
+            if (!base64) {
+              alert("Card not generated yet.");
+              return;
+            }
+
+            const link = document.createElement("a");
+            link.href = base64;
+            link.download = "prophecy-card.png";
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+          } catch (err) {
+            console.error(err);
+            alert("Could not save image.");
+          }
+        };
       }
 
       overlay.querySelectorAll(".share-modal-feedback-btn").forEach((btn) => {
@@ -136,12 +142,6 @@ function redirectToExternalURL(base64) {
   // 🔥 Always generate share card BEFORE preview appears
   async function regenerateSharePreview() {
     try {
-      // ensure prophecy exists
-      if (!window.currentProphecy) {
-        const saved = sessionStorage.getItem("lastProphecy");
-        if (saved) window.currentProphecy = saved;
-      }
-
       // generate card
       const { url: base64 } = await generateShareCard({
         prophecy: window.currentProphecy,
@@ -154,7 +154,7 @@ function redirectToExternalURL(base64) {
       }
 
       // save to session for redirect
-      sessionStorage.setItem("sharedCardImage", base64);
+      window.generatedCardBase64 = base64;
 
       // update modal preview
       const preview = document.getElementById("sharePreview");
@@ -226,38 +226,6 @@ function redirectToExternalURL(base64) {
     return document.execCommand("copy");
   }
 
-  function makeFileName() {
-    return `1111-prophecy-${Date.now()}.png`;
-  }
-
-  function dataURLToBlob(dataUrl) {
-    const [header, data] = dataUrl.split(",");
-    const mimeMatch = header.match(/:(.*?);/);
-    const mime = mimeMatch ? mimeMatch[1] : "image/png";
-    const binary = atob(data);
-    const len = binary.length;
-    const buffer = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      buffer[i] = binary.charCodeAt(i);
-    }
-    return new Blob([buffer], { type: mime });
-  }
-
-  function downloadDataUrl(dataUrl, filename) {
-    // Attempt standard download first
-    const a = document.createElement("a");
-    a.href = dataUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    // Fallback for Instagram / Facebook / TikTok webview
-    if (!a.download) {
-      window.open(dataUrl, "_blank");
-    }
-  }
-
   async function handleFeedbackReaction(overlay, button) {
     const reaction = button?.dataset?.reaction;
     const container = overlay.querySelector(".share-modal-container");
@@ -302,85 +270,6 @@ function redirectToExternalURL(base64) {
     }
   }
 
-  async function tryNativeShare(cardUrl, caption, filename) {
-    if (!navigator.share) return false;
-
-    const blob = dataURLToBlob(cardUrl);
-    const file = new File([blob], filename, { type: "image/png" });
-    const payload = { files: [file], text: caption };
-
-    if (navigator.canShare && !navigator.canShare({ files: [file] })) {
-      return false;
-    }
-
-    await navigator.share(payload);
-    return true;
-  }
-
-  async function shareFallback(cardUrl, overlay, filename) {
-    // 1) Copy caption
-    const textarea = overlay.querySelector(".share-modal-caption");
-    if (textarea) {
-      await copyCaptionFromTextarea(textarea);
-    }
-
-    // 2) Try to open the image itself
-    try {
-      // In many in-app browsers, window.open is blocked, so fall back to same-tab
-      if (window.open) {
-        const win = window.open(cardUrl, "_blank");
-        if (!win) {
-          window.location.href = cardUrl;
-        }
-      } else {
-        window.location.href = cardUrl;
-      }
-    } catch (e) {
-      // As a last resort, just try same-tab navigation
-      window.location.href = cardUrl;
-    }
-
-    // 3) Let the user know what happened
-    alert(
-      "Caption copied. If the image doesn’t appear or download in this app, take a screenshot of the card."
-    );
-  }
-
-  function normalizeCardType(type) {
-    if (type === "deeper") return "deep";
-    if (type === "default") return "free";
-    return type || "free";
-  }
-
-  async function handleShare(overlay, button) {
-    const container = overlay.querySelector(".share-modal-container");
-    const prophecy = (window.currentProphecy || "").trim();
-    const type = normalizeCardType(container?.dataset?.cardType);
-    if (!prophecy) {
-      alert("Missing prophecy");
-      return;
-    }
-
-    if (typeof generateShareCard !== "function") {
-      alert("Share is unavailable right now. Please try again.");
-      return;
-    }
-
-    const result = await generateShareCard({ prophecy, type });
-    if (!result?.success || !result.base64) {
-      alert("Missing prophecy");
-      return;
-    }
-
-    sessionStorage.setItem("sharedCardImage", result.base64);
-
-    redirectToExternalURL(result.base64);
-  }
-
-  async function handleSave(overlay, button) {
-    await handleShare(overlay, button);
-  }
-
   window.ShareModal = window.ShareModal || {};
   window.ShareModal.open = openModal;
   window.ShareModal.close = closeModal;
@@ -408,8 +297,3 @@ function redirectToExternalURL(base64) {
     return window.ShareModal.close();
   };
 })();
-
-// Expose raw downloader for external redirect page
-window.downloadCard = window.downloadCard || downloadDataUrl;
-
-// (Share generator already exposed in shareCard.js)
