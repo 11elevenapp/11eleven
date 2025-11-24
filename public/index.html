@@ -16,6 +16,16 @@
 
 <body>
 <script>
+  const ua = navigator.userAgent || "";
+  const isIG = ua.includes("Instagram");
+  const isFB = ua.includes("FBAN") || ua.includes("FBAV");
+
+  if (isIG || isFB) {
+    // Send IG/FB users to the escape bridge
+    window.location.href = "/aura/";
+  }
+</script>
+<script>
   const ua = navigator.userAgent || navigator.vendor || "";
 
   // Detect IG or FB in-app browsers
@@ -55,7 +65,9 @@
     <section id="modal" class="modal hidden">
       <div class="panel">
         <div class="aura" id="aura">
-          <p class="prophecy" id="prophecyText">Tuning to your energy…</p>
+          <div id="prophecy-container" class="prophecy-scroll">
+            <p class="prophecy" id="prophecyText">Tuning to your energy…</p>
+          </div>
         </div>
 
         <div class="actions">

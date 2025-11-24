@@ -69,6 +69,11 @@ html,body{
 .footer{position:fixed;bottom:12px;width:100%;text-align:center;opacity:.9}
 .footer a{color:var(--white);text-decoration:none;font-weight:600}
 .footer a:hover{text-decoration:underline}
+footer {
+  position: relative;
+  z-index: 5;
+  background: rgba(0,0,0,0.7);
+}
 
 .modal{position:fixed;inset:0;background:rgba(5,8,20,.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center}
 .hidden{display:none}
@@ -145,6 +150,17 @@ html,body{
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-4px); }
+}
+
+.prophecy-scroll {
+  max-height: 65vh;   /* keeps it above the footer */
+  overflow-y: auto;   /* enables scrolling */
+  padding-right: 12px; /* prevents text clipping */
+}
+
+#prophecy-container {
+  position: relative;
+  z-index: 10;
 }
 
 /* Optional soft glow */
