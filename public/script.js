@@ -226,6 +226,15 @@ window.clearPaid = function () {
 
 function showShareModal() {
   const cardURL = window.generatedCardBase64 || "";
+
+  if (window.lastPurchaseType === "early") {
+    window.currentCardType = "early";
+  } else if (window.lastPurchaseType === "deep") {
+    window.currentCardType = "deep";
+  } else {
+    window.currentCardType = "free";
+  }
+
   const shareOptions = {
     cardDataURL: cardURL,
     themeKey: window.currentThemeKey || "default",
@@ -233,7 +242,8 @@ function showShareModal() {
     tone: window.currentToneKey || "",
     language: window.currentLanguage || "en",
     caption: window.currentCaption || "",
-    hashtags: window.currentHashtags || ""
+    hashtags: window.currentHashtags || "",
+    cardType: window.currentCardType
   };
   if (typeof window.openShareModal === "function") {
     setTimeout(() => {
