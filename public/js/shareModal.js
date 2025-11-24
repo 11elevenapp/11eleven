@@ -18,15 +18,13 @@ function redirectToExternalURL(base64) {
 }
 
 (function () {
-  const API_BASE = "https://one1eleven-backend.onrender.com";
-
-  // 🔥 Restore prophecy if IG/FB nuked JS globals
+  // 🔥 Restore prophecy from session if IG/FB nuked window.currentProphecy
   if (!window.currentProphecy) {
     const saved = sessionStorage.getItem("lastProphecy");
-    if (saved) {
-      window.currentProphecy = saved;
-    }
+    if (saved) window.currentProphecy = saved;
   }
+
+  const API_BASE = "https://one1eleven-backend.onrender.com";
 
   function redirectToExternal(action) {
     // Build the payload page that Chrome/Safari will open
@@ -77,7 +75,7 @@ function redirectToExternalURL(base64) {
         <div class="share-modal-container" role="dialog" aria-modal="true">
           <button class="share-modal-close" aria-label="Close Share Modal">&times;</button>
           <div class="share-modal-card-preview">
-            <img alt="Share preview" />
+            <img id="sharePreview" alt="Share preview" />
           </div>
           <textarea class="share-modal-caption" readonly></textarea>
           <div class="share-modal-feedback">
@@ -135,6 +133,38 @@ function redirectToExternalURL(base64) {
     return overlay;
   }
 
+  // 🔥 Always generate share card BEFORE preview appears
+  async function regenerateSharePreview() {
+    try {
+      // ensure prophecy exists
+      if (!window.currentProphecy) {
+        const saved = sessionStorage.getItem("lastProphecy");
+        if (saved) window.currentProphecy = saved;
+      }
+
+      // generate card
+      const { url: base64 } = await generateShareCard({
+        prophecy: window.currentProphecy,
+        type: window.currentCardType || "default"
+      });
+
+      if (!base64) {
+        console.error("Failed to generate card preview.");
+        return;
+      }
+
+      // save to session for redirect
+      sessionStorage.setItem("sharedCardImage", base64);
+
+      // update modal preview
+      const preview = document.getElementById("sharePreview");
+      if (preview) preview.src = base64;
+
+    } catch (err) {
+      console.error("Error regenerating preview:", err);
+    }
+  }
+
   function closeModal() {
     const overlay = document.getElementById(OVERLAY_ID);
     if (overlay) {
@@ -174,6 +204,8 @@ function redirectToExternalURL(base64) {
     const overlay = ensureDOM();
     populateModal(overlay, options);
     overlay.classList.add("visible");
+    // 🔥 Force preview generation on modal open
+    regenerateSharePreview();
   }
 
   async function copyCaptionFromTextarea(textarea) {

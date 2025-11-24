@@ -298,14 +298,10 @@ function redirectToExternalURL(url) {
   }
 }
 
-// 🔥 Guarantee prophecy survives redirects (IG/FB lose globals)
+// 🔥 Guarantee prophecy survives IG/FB redirects
 window.addEventListener("beforeunload", () => {
-  try {
-    if (lastProphecy) {
-      sessionStorage.setItem("lastProphecy", lastProphecy);
-      window.currentProphecy = lastProphecy;
-    }
-  } catch (e) {
-    console.warn("Failed to persist prophecy", e);
+  if (lastProphecy) {
+    sessionStorage.setItem("lastProphecy", lastProphecy);
+    window.currentProphecy = lastProphecy;
   }
 });
