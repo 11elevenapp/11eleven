@@ -584,6 +584,24 @@ footer {
   color: #edfafa;
 }
 
+.main-share-btn {
+  width: 100%;
+  padding: 16px;
+  margin-top: 12px;
+  background: linear-gradient(90deg, #4bb4ff, #7f5eff);
+  border-radius: 40px;
+  border: none;
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+}
+
+.main-share-btn:hover {
+  opacity: 0.9;
+}
+
 /* ================================
    VIEWCARD PAGE (direct PNG view)
    ================================ */
