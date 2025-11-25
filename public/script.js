@@ -52,11 +52,17 @@ function updateProphecyView(result, auraMode) {
   localStorage.removeItem("lastProphecy");
   auraEl.style.background = Engine.getAuraGradient(result.aura, auraMode);
 
-  const depth =
-    result.isPortal1111 ? "1111" :
-    result.kind === "deeper_access" ? "deeper" :
+  const cardType =
+    result.type ||
+    (result.isPortal1111 ? "portal_1111" :
+    result.kind === "deeper_access" ? "deep" :
     result.kind === "early_access" ? "early" :
-    "free";
+    "free");
+
+  const depth =
+    cardType === "portal_1111" ? "1111" :
+    cardType === "deep" ? "deeper" :
+    cardType;
 
   const themeKey = result.themeKey || "default";
   const primaryEmotion = result.emotion?.primary || "";
@@ -73,6 +79,9 @@ function updateProphecyView(result, auraMode) {
   window.currentLanguage = language;
   window.currentCaption = caption;
   window.currentHashtags = hashtags;
+  window.lastProphecyText = cleanedText || rawText || "";
+  window.lastProphecyType = cardType;
+  window.currentCardType = cardType;
 }
 
 const hasEarlyParam = params.get("access") === "granted";
@@ -227,13 +236,8 @@ window.clearPaid = function () {
 function showShareModal() {
   const cardURL = window.generatedCardBase64 || "";
 
-  if (window.lastPurchaseType === "early") {
-    window.currentCardType = "early";
-  } else if (window.lastPurchaseType === "deep") {
-    window.currentCardType = "deep";
-  } else {
-    window.currentCardType = "free";
-  }
+  const resolvedCardType = window.lastProphecyType || window.currentCardType || "free";
+  window.currentCardType = resolvedCardType;
 
   const shareOptions = {
     cardDataURL: cardURL,
@@ -243,7 +247,7 @@ function showShareModal() {
     language: window.currentLanguage || "en",
     caption: window.currentCaption || "",
     hashtags: window.currentHashtags || "",
-    cardType: window.currentCardType
+    cardType: resolvedCardType
   };
   if (typeof window.openShareModal === "function") {
     setTimeout(() => {

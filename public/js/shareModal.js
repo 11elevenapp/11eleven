@@ -110,10 +110,13 @@ const generateShareCard = window.generateShareCard;
   // 🔥 Always generate share card BEFORE preview appears
   async function regenerateSharePreview() {
     try {
+      const prophecyText = window.lastProphecyText || window.currentProphecy;
+      const cardType = window.lastProphecyType || window.currentCardType || "free";
+
       // generate card
       const { url: base64 } = await generateShareCard({
-        prophecy: window.currentProphecy,
-        type: window.currentCardType || "default"
+        prophecy: prophecyText,
+        type: cardType
       });
 
       if (!base64) {
@@ -255,9 +258,9 @@ const generateShareCard = window.generateShareCard;
 
   window.openShareModal = function (options = {}) {
     const prophecyEl = document.getElementById("prophecyText");
-    const renderedProphecy = prophecyEl?.textContent
+    const renderedProphecy = window.lastProphecyText || (prophecyEl?.textContent
       ? prophecyEl.textContent.trim()
-      : "";
+      : "");
 
     const prophecyFromOptions = typeof options.caption === "string"
       ? options.caption.trim()
@@ -268,6 +271,7 @@ const generateShareCard = window.generateShareCard;
     if (finalProphecy) {
       window.currentProphecy = finalProphecy;
     }
+    window.currentCardType = options.cardType || window.lastProphecyType || window.currentCardType || "free";
 
     return window.ShareModal.open(options);
   };
