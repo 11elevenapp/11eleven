@@ -674,10 +674,10 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
-// Catch-all route for unmatched paths
-// Direct route for backend/social.html
+// Serve social.html from backend root
 app.get("/social.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "social.html"));
+    const path = require("path");
+    res.sendFile(path.join(__dirname, "social.html"));
 });
 
 // Catch-all route for unmatched paths
