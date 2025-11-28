@@ -89,28 +89,60 @@
 
     // 2️⃣ LOGIN FLOW
     function loginWithFacebook() {
-      FB.login(function(response) {
-        if (response.authResponse) {
-          accessToken = response.authResponse.accessToken;
-          document.getElementById("statusMsg").innerHTML = "Logged in. Getting pages...";
-          fetchPages();
-        } else {
-          alert("Login failed.");
+      FB.login(
+        function(response) {
+          console.log("FB Login Response:", response);
+
+          if (response.authResponse) {
+            accessToken = response.authResponse.accessToken;
+            document.getElementById("statusMsg").innerHTML =
+              "Logged in. Getting pages…";
+            fetchPages();
+          } else {
+            alert("Login failed or cancelled.");
+          }
+        },
+        {
+          scope:
+            "public_profile,email,pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish"
         }
-      }, { scope: "pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish" });
+      );
     }
 
     // 3️⃣ GET FB PAGES
     function fetchPages() {
-      FB.api("/me/accounts", function(response) {
-        const pageSelect = document.getElementById("pageSelect");
-        pageSelect.style.display = "block";
+      FB.api("/me/accounts", "GET", {}, function(response) {
+        console.log("Pages Response:", response);
 
-        response.data.forEach(page => {
-          const option = document.createElement("option");
-          option.value = JSON.stringify(page);
-          option.innerText = page.name;
-          pageSelect.appendChild(option);
+        const select = document.getElementById("pageSelect");
+        select.style.display = "block";
+        select.innerHTML = ""; // clear previous
+
+        if (!response || response.error) {
+          document.getElementById("statusMsg").innerHTML =
+            "Error loading pages.";
+          alert(
+            "Could not load pages.\n\n" +
+              (response?.error?.message || "Unknown error")
+          );
+          return;
+        }
+
+        if (response.data.length === 0) {
+          document.getElementById("statusMsg").innerHTML =
+            "No Pages returned. Check permissions.";
+          alert(
+            "Facebook returned NO pages.\n\n" +
+              "Make sure you selected all permissions during login."
+          );
+          return;
+        }
+
+        response.data.forEach((page) => {
+          let opt = document.createElement("option");
+          opt.value = JSON.stringify(page);
+          opt.innerText = page.name;
+          select.appendChild(opt);
         });
 
         document.getElementById("createProphecyBtn").style.display = "block";
