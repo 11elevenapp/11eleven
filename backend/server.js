@@ -674,6 +674,11 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
+// Serve social.html explicitly (bypasses catch-all)
+app.get("/social.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "public", "social.html"));
+});
+
 // Catch-all route for unmatched paths
 app.get("*", (req, res) => {
   res.status(404).send("Not Found");
