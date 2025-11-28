@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>11Eleven Social Tools</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script async defer crossorigin="anonymous"
+    src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+    .card {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: auto;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    button {
+      padding: 12px 20px;
+      background: #4b7bec;
+      border: none;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-size: 16px;
+    }
+    button:disabled {
+      background: #444;
+      cursor: not-allowed;
+    }
+    select {
+      padding: 10px;
+      width: 100%;
+      border-radius: 6px;
+      margin-top: 15px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>11Eleven • Social Publishing Console</h1>
+    <p>This page is for admin testing only.</p>
+
+    <!-- FB Login -->
+    <button id="fb-login-btn" onclick="loginWithFacebook()">Login with Facebook</button>
+
+    <!-- Page Picker -->
+    <select id="pageSelect" style="display:none;"></select>
+
+    <!-- Create Prophecy -->
+    <button id="createProphecyBtn" style="display:none;" onclick="generateProphecy()">
+      Generate Test Prophecy
+    </button>
+
+    <!-- Publish to IG -->
+    <button id="publishBtn" style="display:none;" onclick="publishToInstagram()">
+      Publish to Instagram
+    </button>
+
+    <p id="statusMsg" style="margin-top:20px; opacity:0.8;"></p>
+  </div>
+
+  <script>
+    let accessToken = null;
+    let pageAccessToken = null;
+    let igUserId = null;
+    let generatedImageUrl = null;
+
+    // 1️⃣ FACEBOOK SDK INIT
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId: "1555865665551147",
+        cookie: true,
+        xfbml: true,
+        version: "v21.0"
+      });
+    };
+
+    // 2️⃣ LOGIN FLOW
+    function loginWithFacebook() {
+      FB.login(function(response) {
+        if (response.authResponse) {
+          accessToken = response.authResponse.accessToken;
+          document.getElementById("statusMsg").innerHTML = "Logged in. Getting pages...";
+          fetchPages();
+        } else {
+          alert("Login failed.");
+        }
+      }, { scope: "pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish" });
+    }
+
+    // 3️⃣ GET FB PAGES
+    function fetchPages() {
+      FB.api("/me/accounts", function(response) {
+        const pageSelect = document.getElementById("pageSelect");
+        pageSelect.style.display = "block";
+
+        response.data.forEach(page => {
+          const option = document.createElement("option");
+          option.value = JSON.stringify(page);
+          option.innerText = page.name;
+          pageSelect.appendChild(option);
+        });
+
+        document.getElementById("createProphecyBtn").style.display = "block";
+        document.getElementById("statusMsg").innerHTML = "Select your Page.";
+      });
+    }
+
+    // 4️⃣ GENERATE PROPHECY (test placeholder)
+    function generateProphecy() {
+      const pageData = JSON.parse(document.getElementById("pageSelect").value);
+      pageAccessToken = pageData.access_token;
+
+      // You will replace this with your backend prophecy generator:
+      generatedImageUrl = "https://storage.googleapis.com/graph-explorer-api-samples/jerry.jpg";
+
+      // Get Instagram ID
+      FB.api(`/${pageData.id}?fields=instagram_business_account`, function(res) {
+        if (res.instagram_business_account) {
+          igUserId = res.instagram_business_account.id;
+          document.getElementById("publishBtn").style.display = "block";
+          document.getElementById("statusMsg").innerHTML =
+            "Prophecy ready. Click Publish to Instagram.";
+        } else {
+          alert("This FB Page is not linked to an Instagram Business account.");
+        }
+      });
+    }
+
+    // 5️⃣ PUBLISH TO INSTAGRAM
+    function publishToInstagram() {
+      document.getElementById("statusMsg").innerHTML = "Uploading image...";
+
+      // Step 1: Create container
+      FB.api(
+        `/${igUserId}/media`,
+        "POST",
+        {
+          image_url: generatedImageUrl,
+          caption: "Prophecy Test Upload 🔮",
+          access_token: pageAccessToken
+        },
+        function(createResponse) {
+          if (!createResponse.id) {
+            alert("Media create failed.");
+            return;
+          }
+
+          document.getElementById("statusMsg").innerHTML = "Publishing...";
+
+          // Step 2: Publish it
+          FB.api(
+            `/${igUserId}/media_publish`,
+            "POST",
+            {
+              creation_id: createResponse.id,
+              access_token: pageAccessToken
+            },
+            function(publishResponse) {
+              if (publishResponse.id) {
+                document.getElementById("statusMsg").innerHTML =
+                  "Published SUCCESSFULLY! Check Instagram.";
+              } else {
+                alert("Publish failed.");
+              }
+            }
+          );
+        }
+      );
+    }
+  </script>
+</body>
+</html>

@@ -9,10 +9,21 @@ import OpenAI from "openai";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { v2 as cloudinary } from "cloudinary";
 import creatorRoutes from "./routes/creator.js";
+import instagramRoutes from "./routes/instagram.js";
+import facebookRoutes from "./routes/facebook.js";
+import webhookRoutes from "./routes/webhook.js";
 import { startEngagementBot } from "./engagementBot.js";
+import { startProphecyCronJobs } from "./cron/prophecyPoster.js";
 
 dotenv.config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const app = express();
 
@@ -34,10 +45,24 @@ const __dirname = path.dirname(__filename);
 // STATIC FILES
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json({ limit: "25mb" }));
+app.use("/instagram", instagramRoutes);
+app.use("/facebook", facebookRoutes);
 app.use("/creator", creatorRoutes);
+app.use("/instagram", webhookRoutes);
 
-import queueRoutes from "./routes/queue.js";
-app.use("/queue", queueRoutes);
+async function uploadCardToCloudinary(localPath) {
+  try {
+    const upload = await cloudinary.uploader.upload(localPath, {
+      folder: "11eleven_cards",
+      resource_type: "image",
+    });
+
+    return upload.secure_url; // This URL is IG-SAFE
+  } catch (err) {
+    console.error("❌ Cloudinary Upload Error:", err);
+    return null;
+  }
+}
 
 const USER_DATA_PATH = path.join(__dirname, "..", "public", "userData.json");
 const USER_DATA_DEFAULT = {
@@ -258,7 +283,7 @@ function updatePreferenceModel(data, reaction, ctx = {}) {
   if (delta !== 0) {
     adjustPreferenceEntry(model.byTheme, theme, delta);
     adjustPreferenceEntry(model.byEmotion, primaryEmotion, delta);
-    adjustPreferenceEntry(model.byTone, tone, delta);
+  adjustPreferenceEntry(model.byTone, tone, delta);
   }
 
   if (language && !model.languages.includes(language)) {
@@ -270,6 +295,51 @@ function updatePreferenceModel(data, reaction, ctx = {}) {
 
   data.preferencesModel = model;
 }
+
+// -------------------------------------------
+// TEST POST ROUTE
+// -------------------------------------------
+app.get("/test-post", async (req, res) => {
+  try {
+    const cardPath = path.join(__dirname, "public/cards/test.png");
+    const imageURL = await uploadCardToCloudinary(cardPath);
+
+    if (!imageURL) {
+      return res.json({ ok: false, error: "Cloudinary upload failed" });
+    }
+
+    const caption = "🔥 Test post from 11Eleven Oracle.";
+
+    // Step 1 — Create media container
+    const container = await fetch(
+      `https://graph.instagram.com/me/media?image_url=${encodeURIComponent(
+        imageURL
+      )}&caption=${encodeURIComponent(caption)}&access_token=${
+        process.env.FB_IG_ACCESS_TOKEN
+      }`,
+      { method: "POST" }
+    ).then((r) => r.json());
+
+    console.log("Media container result:", container);
+
+    if (!container.id) {
+      return res.json({ ok: false, error: container });
+    }
+
+    // Step 2 — Publish container
+    const publish = await fetch(
+      `https://graph.instagram.com/me/media_publish?creation_id=${container.id}&access_token=${process.env.FB_IG_ACCESS_TOKEN}`,
+      { method: "POST" }
+    ).then((r) => r.json());
+
+    console.log("Publish result:", publish);
+
+    return res.json({ ok: true, container, publish });
+  } catch (err) {
+    console.error("Test post error:", err);
+    return res.json({ ok: false, error: err.toString() });
+  }
+});
 
 // ---------------------------------------------------------------------
 // MEMORY ENGINE (per-IP session simulation)
@@ -610,12 +680,10 @@ app.get("*", (req, res) => {
 });
 
 // START SERVER
-import { startScheduler } from "./scheduler.js";
-startScheduler();
 startEngagementBot();
-import "./poster.js";
 
 const PORT = process.env.PORT || 8787;
 app.listen(PORT, () => {
   console.log(`🔮 11Eleven Oracle running at http://localhost:${PORT}`);
 });
+startProphecyCronJobs();

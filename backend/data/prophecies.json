@@ -1,0 +1,20 @@
+[
+  {
+    "id": "test",
+    "caption": "🔥 This is a test prophecy post.",
+    "filename": "test.png",
+    "posted": true
+  },
+  {
+    "id": "1111",
+    "caption": "You are entering a higher timeline.",
+    "filename": "1111-1764024248124.png",
+    "posted": true
+  },
+  {
+    "id": "deep",
+    "caption": "Your deeper self is awakening.",
+    "filename": "deep-1764024236971.png",
+    "posted": false
+  }
+]
