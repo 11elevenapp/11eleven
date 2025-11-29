@@ -3,21 +3,6 @@ import { publishToInstagram } from "../utils/instagram.js";
 import { publishToFacebook } from "../utils/facebook.js";
 import { getNextProphecy, markProphecyPosted } from "../utils/prophecyLoader.js";
 import { isPostingEnabled } from "../utils/cronStatus.js";
-import { v2 as cloudinary } from "cloudinary";
-
-async function uploadCardToCloudinary(localPath) {
-  try {
-    const upload = await cloudinary.uploader.upload(localPath, {
-      folder: "11eleven_cards",
-      resource_type: "image",
-    });
-
-    return upload.secure_url;
-  } catch (err) {
-    console.error("❌ Cloudinary Upload Error:", err);
-    return null;
-  }
-}
 
 async function runProphecyPost() {
   try {
@@ -27,15 +12,14 @@ async function runProphecyPost() {
       return;
     }
 
-    const { imagePath, caption, entry, list } = prophecy;
+    const { imagePath, caption, entry, list, imageUrl } = prophecy;
 
-    console.log("Posting prophecy:", imagePath);
+    console.log("Posting prophecy:", imagePath || imageUrl);
 
-    const imageURL = await uploadCardToCloudinary(imagePath);
-    if (!imageURL) {
-      console.error("Cloudinary upload failed — skipping post.");
-      return;
-    }
+    const imageURL =
+      imageUrl ||
+      process.env.TEST_IMAGE_URL ||
+      "https://storage.googleapis.com/graph-explorer-api-samples/jerry.jpg";
 
     const result = await publishToInstagram(imageURL, caption);
 

@@ -12,23 +12,8 @@ import {
   enablePosting,
   disablePosting,
 } from "../utils/cronStatus.js";
-import { v2 as cloudinary } from "cloudinary";
 
 const router = express.Router();
-
-async function uploadCardToCloudinary(localPath) {
-  try {
-    const upload = await cloudinary.uploader.upload(localPath, {
-      folder: "11eleven_cards",
-      resource_type: "image",
-    });
-
-    return upload.secure_url;
-  } catch (err) {
-    console.error("❌ Cloudinary Upload Error:", err);
-    return null;
-  }
-}
 
 // Poll Instagram container until ready
 async function waitForMediaReady(igUserId, containerId, token) {
@@ -110,13 +95,11 @@ router.get("/test-post", async (req, res) => {
       return res.status(404).json({ error: "No unposted prophecies left" });
     }
 
-    const { imagePath, caption, entry, list } = next;
-    console.log("TEST POST using imagePath:", imagePath);
-
-    const imageURL = await uploadCardToCloudinary(imagePath);
-    if (!imageURL) {
-      return res.status(500).json({ error: "Cloudinary upload failed" });
-    }
+    const { caption, entry, list } = next;
+    const imageURL =
+      process.env.TEST_IMAGE_URL ||
+      "https://storage.googleapis.com/graph-explorer-api-samples/jerry.jpg";
+    console.log("TEST POST using imageURL:", imageURL);
 
     // 1) Create IG media container
     const container = await fetch(

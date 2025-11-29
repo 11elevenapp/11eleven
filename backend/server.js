@@ -9,21 +9,14 @@ import OpenAI from "openai";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
-import { v2 as cloudinary } from "cloudinary";
 import creatorRoutes from "./routes/creator.js";
-import instagramRoutes from "./routes/instagram.js";
 import facebookRoutes from "./routes/facebook.js";
 import webhookRoutes from "./routes/webhook.js";
 import { startEngagementBot } from "./engagementBot.js";
 import { startProphecyCronJobs } from "./cron/prophecyPoster.js";
+import { startManualGenerationCron } from "./cron/manualGenerator.js";
 
 dotenv.config();
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 const app = express();
 
@@ -45,24 +38,9 @@ const __dirname = path.dirname(__filename);
 // STATIC FILES
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json({ limit: "25mb" }));
-app.use("/instagram", instagramRoutes);
 app.use("/facebook", facebookRoutes);
 app.use("/creator", creatorRoutes);
 app.use("/instagram", webhookRoutes);
-
-async function uploadCardToCloudinary(localPath) {
-  try {
-    const upload = await cloudinary.uploader.upload(localPath, {
-      folder: "11eleven_cards",
-      resource_type: "image",
-    });
-
-    return upload.secure_url; // This URL is IG-SAFE
-  } catch (err) {
-    console.error("❌ Cloudinary Upload Error:", err);
-    return null;
-  }
-}
 
 const USER_DATA_PATH = path.join(__dirname, "..", "public", "userData.json");
 const USER_DATA_DEFAULT = {
@@ -301,12 +279,9 @@ function updatePreferenceModel(data, reaction, ctx = {}) {
 // -------------------------------------------
 app.get("/test-post", async (req, res) => {
   try {
-    const cardPath = path.join(__dirname, "public/cards/test.png");
-    const imageURL = await uploadCardToCloudinary(cardPath);
-
-    if (!imageURL) {
-      return res.json({ ok: false, error: "Cloudinary upload failed" });
-    }
+    const imageURL =
+      process.env.TEST_IMAGE_URL ||
+      "https://storage.googleapis.com/graph-explorer-api-samples/jerry.jpg";
 
     const caption = "🔥 Test post from 11Eleven Oracle.";
 
@@ -692,3 +667,4 @@ app.listen(PORT, () => {
   console.log(`🔮 11Eleven Oracle running at http://localhost:${PORT}`);
 });
 startProphecyCronJobs();
+startManualGenerationCron();

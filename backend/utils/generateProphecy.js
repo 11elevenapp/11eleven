@@ -248,12 +248,13 @@ export async function generateProphecyCard(kind = "early") {
     const backgroundBuffer = await generateImage("11Eleven editorial square background");
     const cardUrl = await composeProphecyCard(prophecyText, backgroundBuffer, kind);
     const finalText = prophecyText;
-    const typeMap = {
-      early: "early",
-      deep: "deep",
-      1111: "portal_1111",
+    const TYPE_MAP = {
+      free: "free",
+      early_access: "early",
+      deep_insight: "deep",
+      portal_1111: "portal_1111"
     };
-    const type = typeMap[kind] || "free";
+    const type = TYPE_MAP[kind] || "free";
 
     const captions = generateCaptionVariants(prophecyText);
     const cta = pickRandomCTA();
